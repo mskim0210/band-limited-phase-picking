@@ -1,0 +1,53 @@
+# CS-Accelerated Seismic Phase Picking — Experiment Configuration
+
+seed: 42
+
+# ── Data ───────────────────────────────────────────────
+data:
+  stead_hdf5: "/path/to/STEAD/merge.hdf5"   # EDIT: local STEAD archive
+  stead_csv: "/path/to/STEAD/merge.csv"    # EDIT: local STEAD metadata
+  memmap_dir: "./data/stead_memmap"         # created by preprocess_stead_memmap.py
+  cs_dir: "./data/cs_encoded/"
+  split_ratio: [0.85, 0.05, 0.10]
+
+# ── Model ──────────────────────────────────────────────
+model:
+  backbone: phasenet
+  in_channels: 3
+  num_classes: 3        # Noise, P-arrival, S-arrival
+
+# ── Training ───────────────────────────────────────────
+training:
+  optimizer: adam
+  lr: 1.0e-3
+  batch_size: 64
+  max_epochs: 100
+  patience: 15
+  seeds: [42, 123, 7]
+  num_workers: 4
+  label_sigma: 10.0     # Gaussian σ in samples (0.1s @ 100Hz)
+
+# ── Profiling ──────────────────────────────────────────
+profiling:
+  enabled: true
+  num_steps: 100
+  warmup_steps: 10
+  gpu_log_interval: 1.0  # nvidia-smi polling interval (seconds)
+  gpu_index: 0
+  output_dir: "outputs/profiles"
+
+# ── Sparsity Analysis ─────────────────────────────────
+sparsity:
+  n_traces: 10000
+  seed: 42
+  wavelet: "db4"
+  wavelet_level: 6
+  kept_ratios: [0.05, 0.10, 0.15, 0.20, 0.25, 0.50]
+  compression_ratios: [4, 8, 16, 32]
+  output_dir: "outputs/sparsity"
+
+# ── Experiment ─────────────────────────────────────────
+experiment:
+  levels: [L0, L1, L2, L3]
+  compression_ratios: [4, 8, 16]
+  matrix_types: [wavelet, dct, butterworth, lowpass, gaussian]

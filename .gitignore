@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+data/
+outputs/*
+!outputs/results/
+!outputs/profiles/
+!outputs/sparsity/
+!outputs/checkpoints/
+!outputs/checkpoints/*/
+outputs/checkpoints/*/*
+!outputs/checkpoints/*/epoch_log.csv
+*.aux
+*.log
+.pytest_cache/

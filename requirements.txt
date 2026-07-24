@@ -1,0 +1,14 @@
+# Core (versions used in the paper: Python 3.11, PyTorch 2.10 + CUDA 12.8)
+torch>=2.1
+numpy>=1.24
+scipy>=1.10
+pandas>=2.0
+PyWavelets>=1.4
+omegaconf>=2.3
+h5py>=3.8
+obspy>=1.4          # real-data (mseed) experiments only
+seisbench>=0.5      # PhaseNet control experiment only
+matplotlib>=3.7
+tqdm
+psutil              # system-level I/O profiling only
+pytest              # unit tests

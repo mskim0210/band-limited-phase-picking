@@ -1,0 +1,48 @@
+{
+  "config": "l2_baseline_seed42",
+  "checkpoint": "outputs/checkpoints/l2_baseline_seed42/best_model.pt",
+  "test_traces": 344242,
+  "eval_time_sec": 63.7,
+  "model": {
+    "M": 6000,
+    "N": 6000,
+    "cr": 1,
+    "matrix_type": "baseline"
+  },
+  "tolerance_0.1s": {
+    "P": {
+      "precision": 0.5262,
+      "recall": 0.4301,
+      "f1": 0.4733
+    },
+    "S": {
+      "precision": 0.3831,
+      "recall": 0.4699,
+      "f1": 0.4221
+    }
+  },
+  "tolerance_0.5s": {
+    "P": {
+      "precision": 0.8256,
+      "recall": 0.6748,
+      "f1": 0.7426
+    },
+    "S": {
+      "precision": 0.5975,
+      "recall": 0.733,
+      "f1": 0.6584
+    }
+  },
+  "timing": {
+    "P": {
+      "mae_sec": 0.1051,
+      "mean_residual_sec": 0.0817,
+      "std_residual_sec": 0.1277
+    },
+    "S": {
+      "mae_sec": 0.1088,
+      "mean_residual_sec": 0.0574,
+      "std_residual_sec": 0.1446
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+ "wavelet_band": {
+  "CR2": {
+   "mean": 88.07,
+   "median": 95.16,
+   "std": 15.92,
+   "n_components": 29937
+  },
+  "CR4": {
+   "mean": 66.03,
+   "median": 71.28,
+   "std": 28.33,
+   "n_components": 29937
+  },
+  "CR8": {
+   "mean": 40.41,
+   "median": 33.73,
+   "std": 29.97,
+   "n_components": 29937
+  },
+  "CR16": {
+   "mean": 21.01,
+   "median": 11.09,
+   "std": 24.03,
+   "n_components": 29937
+  }
+ },
+ "dct_first_M": {
+  "CR4": {
+   "mean": 67.54,
+   "median": 74.19,
+   "std": 29.29,
+   "n_components": 29937
+  }
+ },
+ "meta": {
+  "wavelet": "db4",
+  "level": 6,
+  "mode": "symmetric",
+  "split": "test",
+  "n_traces": 10000,
+  "seed": 42
+ }
+}

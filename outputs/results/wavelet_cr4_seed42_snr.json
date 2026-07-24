@@ -1,0 +1,78 @@
+{
+  "config": "wavelet_cr4_seed42",
+  "checkpoint": "outputs/checkpoints/wavelet_cr4_seed42/best_model.pt",
+  "test_traces": 126567,
+  "eval_time_sec": 19.0,
+  "model": {
+    "M": 1500,
+    "N": 6000,
+    "cr": 4,
+    "matrix_type": "wavelet"
+  },
+  "tolerance_0.1s": {
+    "P": {
+      "precision": 0.9732,
+      "recall": 0.9781,
+      "f1": 0.9757
+    },
+    "S": {
+      "precision": 0.7993,
+      "recall": 0.7922,
+      "f1": 0.7957
+    }
+  },
+  "tolerance_0.5s": {
+    "P": {
+      "precision": 0.9838,
+      "recall": 0.9887,
+      "f1": 0.9863
+    },
+    "S": {
+      "precision": 0.97,
+      "recall": 0.9613,
+      "f1": 0.9656
+    }
+  },
+  "timing": {
+    "P": {
+      "mae_sec": 0.0142,
+      "mean_residual_sec": -0.0032,
+      "std_residual_sec": 0.0293
+    },
+    "S": {
+      "mae_sec": 0.0644,
+      "mean_residual_sec": -0.0003,
+      "std_residual_sec": 0.1075
+    }
+  },
+  "snr_stratified": {
+    "<5": {
+      "count": 915,
+      "p_f1_mean": 0.9588,
+      "s_f1_mean": 0.6412,
+      "p_mae_mean": 0.0136,
+      "s_mae_mean": 0.0938
+    },
+    "5-10": {
+      "count": 5201,
+      "p_f1_mean": 0.9507,
+      "s_f1_mean": 0.7236,
+      "p_mae_mean": 0.0141,
+      "s_mae_mean": 0.0785
+    },
+    "10-20": {
+      "count": 28099,
+      "p_f1_mean": 0.9673,
+      "s_f1_mean": 0.7823,
+      "p_mae_mean": 0.0155,
+      "s_mae_mean": 0.0677
+    },
+    ">20": {
+      "count": 68534,
+      "p_f1_mean": 0.9822,
+      "s_f1_mean": 0.803,
+      "p_mae_mean": 0.0137,
+      "s_mae_mean": 0.0617
+    }
+  }
+}

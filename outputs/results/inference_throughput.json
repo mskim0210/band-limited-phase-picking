@@ -1,0 +1,8 @@
+{
+  "baseline": 7159,
+  "dilated": 7055,
+  "cr4": 6175,
+  "baseline_forward_only": 7589,
+  "dilated_forward_only": 7538,
+  "cr4_forward_only": 21799
+}

@@ -1,0 +1,48 @@
+{
+  "config": "lowpass_cr1_seed7",
+  "checkpoint": "outputs/checkpoints/lowpass_cr1_seed7/best_model.pt",
+  "test_traces": 126567,
+  "eval_time_sec": 22.8,
+  "model": {
+    "M": 6000,
+    "N": 6000,
+    "cr": 1,
+    "matrix_type": "lowpass"
+  },
+  "tolerance_0.1s": {
+    "P": {
+      "precision": 0.8975,
+      "recall": 0.9004,
+      "f1": 0.899
+    },
+    "S": {
+      "precision": 0.7999,
+      "recall": 0.7976,
+      "f1": 0.7987
+    }
+  },
+  "tolerance_0.5s": {
+    "P": {
+      "precision": 0.9761,
+      "recall": 0.9793,
+      "f1": 0.9777
+    },
+    "S": {
+      "precision": 0.9607,
+      "recall": 0.9579,
+      "f1": 0.9593
+    }
+  },
+  "timing": {
+    "P": {
+      "mae_sec": 0.0338,
+      "mean_residual_sec": 0.0042,
+      "std_residual_sec": 0.07
+    },
+    "S": {
+      "mae_sec": 0.06,
+      "mean_residual_sec": 0.0029,
+      "std_residual_sec": 0.1051
+    }
+  }
+}

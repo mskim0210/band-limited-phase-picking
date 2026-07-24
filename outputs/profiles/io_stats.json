@@ -1,0 +1,53 @@
+{
+  "L0": {
+    "level": "L0",
+    "n_steps": 100,
+    "batch_size": 64,
+    "total_traces": 6400,
+    "wall_time_s": 18.025,
+    "read_chars": 296262649815,
+    "read_bytes_disk": 768057344,
+    "read_count": 108173,
+    "write_bytes": 4096,
+    "write_count": 1806,
+    "read_chars_per_trace": 46291039.0,
+    "read_chars_MB": 296262.65,
+    "read_chars_GB": 296.2626,
+    "timestamp": "2026-04-03T06:09:16.868807+00:00",
+    "device": "NVIDIA GeForce RTX 5090"
+  },
+  "L2": {
+    "level": "L2",
+    "n_steps": 100,
+    "batch_size": 64,
+    "total_traces": 6400,
+    "wall_time_s": 1.76,
+    "read_chars": 266443,
+    "read_bytes_disk": 232816640,
+    "read_count": 4477,
+    "write_bytes": 0,
+    "write_count": 1806,
+    "read_chars_per_trace": 41.6,
+    "read_chars_MB": 0.27,
+    "read_chars_GB": 0.0003,
+    "timestamp": "2026-04-03T06:09:37.920429+00:00",
+    "device": "NVIDIA GeForce RTX 5090"
+  },
+  "L3": {
+    "level": "L3",
+    "n_steps": 100,
+    "batch_size": 64,
+    "total_traces": 6400,
+    "wall_time_s": 0.901,
+    "read_chars": 266383,
+    "read_bytes_disk": 814956544,
+    "read_count": 4477,
+    "write_bytes": 0,
+    "write_count": 1806,
+    "read_chars_per_trace": 41.6,
+    "read_chars_MB": 0.27,
+    "read_chars_GB": 0.0003,
+    "timestamp": "2026-04-03T06:09:44.567944+00:00",
+    "device": "NVIDIA GeForce RTX 5090"
+  }
+}

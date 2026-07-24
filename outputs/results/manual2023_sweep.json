@@ -1,0 +1,383 @@
+{
+  "meta": {
+    "ft_grid": [
+      "(0.0001, 'none', 'stead')",
+      "(0.0001, 'none', 'uniform')",
+      "(0.0001, 'encoder', 'stead')",
+      "(0.0001, 'encoder', 'uniform')",
+      "(3e-05, 'none', 'stead')",
+      "(3e-05, 'none', 'uniform')",
+      "(3e-05, 'encoder', 'stead')",
+      "(3e-05, 'encoder', 'uniform')",
+      "(1e-05, 'none', 'stead')",
+      "(1e-05, 'none', 'uniform')",
+      "(1e-05, 'encoder', 'stead')",
+      "(1e-05, 'encoder', 'uniform')"
+    ],
+    "distill_grid": [
+      "(0.0001, 1.0)",
+      "(0.0001, 2.0)",
+      "(3e-05, 1.0)",
+      "(3e-05, 2.0)"
+    ],
+    "max_epochs": 30,
+    "patience": 5,
+    "selection": "inner 80/20 cluster-aware event split, mean of P/S F1 at thr 0.3",
+    "threshold": 0.3,
+    "tol_sec": 0.5
+  },
+  "adaptation_cost": {
+    "n_adapt_windows": 1192,
+    "teacher_soft_labels_sec": 0.3,
+    "student_distill_train_sec_best": 5.1,
+    "encode_all_1965_windows_sec": 0.42
+  },
+  "per_seed": {
+    "ft": [
+      {
+        "seed": 42,
+        "chosen": {
+          "lr": 0.0001,
+          "freeze": "none",
+          "weights": "uniform",
+          "epochs": 29,
+          "val": 0.764
+        },
+        "test": {
+          "P": {
+            "n_picks": 443,
+            "tp": 235,
+            "fp": 66,
+            "fn": 208,
+            "recall": 0.53,
+            "precision": 0.781,
+            "f1": 0.632,
+            "res_mean": 0.002,
+            "res_mae": 0.078,
+            "res_std": 0.123
+          },
+          "S": {
+            "n_picks": 425,
+            "tp": 343,
+            "fp": 56,
+            "fn": 82,
+            "recall": 0.807,
+            "precision": 0.86,
+            "f1": 0.833,
+            "res_mean": -0.008,
+            "res_mae": 0.043,
+            "res_std": 0.069
+          },
+          "ft_per_hour_pooled": 15.54
+        }
+      },
+      {
+        "seed": 123,
+        "chosen": {
+          "lr": 0.0001,
+          "freeze": "none",
+          "weights": "uniform",
+          "epochs": 30,
+          "val": 0.7204999999999999
+        },
+        "test": {
+          "P": {
+            "n_picks": 460,
+            "tp": 242,
+            "fp": 88,
+            "fn": 218,
+            "recall": 0.526,
+            "precision": 0.733,
+            "f1": 0.613,
+            "res_mean": 0.004,
+            "res_mae": 0.07,
+            "res_std": 0.114
+          },
+          "S": {
+            "n_picks": 474,
+            "tp": 371,
+            "fp": 61,
+            "fn": 103,
+            "recall": 0.783,
+            "precision": 0.859,
+            "f1": 0.819,
+            "res_mean": -0.015,
+            "res_mae": 0.044,
+            "res_std": 0.065
+          },
+          "ft_per_hour_pooled": 17.99
+        }
+      },
+      {
+        "seed": 7,
+        "chosen": {
+          "lr": 0.0001,
+          "freeze": "none",
+          "weights": "uniform",
+          "epochs": 26,
+          "val": 0.743
+        },
+        "test": {
+          "P": {
+            "n_picks": 462,
+            "tp": 226,
+            "fp": 102,
+            "fn": 236,
+            "recall": 0.489,
+            "precision": 0.689,
+            "f1": 0.572,
+            "res_mean": 0.003,
+            "res_mae": 0.084,
+            "res_std": 0.136
+          },
+          "S": {
+            "n_picks": 457,
+            "tp": 371,
+            "fp": 69,
+            "fn": 86,
+            "recall": 0.812,
+            "precision": 0.843,
+            "f1": 0.827,
+            "res_mean": -0.014,
+            "res_mae": 0.044,
+            "res_std": 0.061
+          },
+          "ft_per_hour_pooled": 20.24
+        }
+      }
+    ],
+    "distill": [
+      {
+        "seed": 42,
+        "chosen": {
+          "lr": 0.0001,
+          "temperature": 1.0,
+          "epochs": 18,
+          "val": 0.737
+        },
+        "test": {
+          "P": {
+            "n_picks": 443,
+            "tp": 223,
+            "fp": 66,
+            "fn": 220,
+            "recall": 0.503,
+            "precision": 0.772,
+            "f1": 0.609,
+            "res_mean": 0.014,
+            "res_mae": 0.082,
+            "res_std": 0.129
+          },
+          "S": {
+            "n_picks": 425,
+            "tp": 308,
+            "fp": 29,
+            "fn": 117,
+            "recall": 0.725,
+            "precision": 0.914,
+            "f1": 0.808,
+            "res_mean": -0.017,
+            "res_mae": 0.042,
+            "res_std": 0.061
+          },
+          "ft_per_hour_pooled": 12.1
+        }
+      },
+      {
+        "seed": 123,
+        "chosen": {
+          "lr": 0.0001,
+          "temperature": 1.0,
+          "epochs": 28,
+          "val": 0.6875
+        },
+        "test": {
+          "P": {
+            "n_picks": 460,
+            "tp": 227,
+            "fp": 77,
+            "fn": 233,
+            "recall": 0.493,
+            "precision": 0.747,
+            "f1": 0.594,
+            "res_mean": 0.015,
+            "res_mae": 0.07,
+            "res_std": 0.113
+          },
+          "S": {
+            "n_picks": 474,
+            "tp": 332,
+            "fp": 30,
+            "fn": 142,
+            "recall": 0.7,
+            "precision": 0.917,
+            "f1": 0.794,
+            "res_mean": -0.014,
+            "res_mae": 0.043,
+            "res_std": 0.062
+          },
+          "ft_per_hour_pooled": 12.92
+        }
+      },
+      {
+        "seed": 7,
+        "chosen": {
+          "lr": 0.0001,
+          "temperature": 1.0,
+          "epochs": 30,
+          "val": 0.7084999999999999
+        },
+        "test": {
+          "P": {
+            "n_picks": 462,
+            "tp": 221,
+            "fp": 84,
+            "fn": 241,
+            "recall": 0.478,
+            "precision": 0.725,
+            "f1": 0.576,
+            "res_mean": 0.013,
+            "res_mae": 0.079,
+            "res_std": 0.123
+          },
+          "S": {
+            "n_picks": 457,
+            "tp": 342,
+            "fp": 31,
+            "fn": 115,
+            "recall": 0.748,
+            "precision": 0.917,
+            "f1": 0.824,
+            "res_mean": -0.015,
+            "res_mae": 0.044,
+            "res_std": 0.063
+          },
+          "ft_per_hour_pooled": 13.61
+        }
+      }
+    ]
+  },
+  "summary": {
+    "ft": {
+      "P": {
+        "recall": [
+          0.515,
+          0.018
+        ],
+        "precision": [
+          0.734,
+          0.038
+        ],
+        "f1": [
+          0.606,
+          0.025
+        ],
+        "res_mae": [
+          0.077,
+          0.006
+        ]
+      },
+      "S": {
+        "recall": [
+          0.801,
+          0.013
+        ],
+        "precision": [
+          0.854,
+          0.008
+        ],
+        "f1": [
+          0.826,
+          0.006
+        ],
+        "res_mae": [
+          0.044,
+          0.0
+        ]
+      },
+      "ft_per_hour_pooled": 17.9,
+      "chosen_configs": [
+        {
+          "lr": 0.0001,
+          "freeze": "none",
+          "weights": "uniform",
+          "epochs": 29,
+          "val": 0.764
+        },
+        {
+          "lr": 0.0001,
+          "freeze": "none",
+          "weights": "uniform",
+          "epochs": 30,
+          "val": 0.7204999999999999
+        },
+        {
+          "lr": 0.0001,
+          "freeze": "none",
+          "weights": "uniform",
+          "epochs": 26,
+          "val": 0.743
+        }
+      ]
+    },
+    "distill": {
+      "P": {
+        "recall": [
+          0.491,
+          0.01
+        ],
+        "precision": [
+          0.748,
+          0.019
+        ],
+        "f1": [
+          0.593,
+          0.013
+        ],
+        "res_mae": [
+          0.077,
+          0.005
+        ]
+      },
+      "S": {
+        "recall": [
+          0.724,
+          0.02
+        ],
+        "precision": [
+          0.916,
+          0.001
+        ],
+        "f1": [
+          0.809,
+          0.012
+        ],
+        "res_mae": [
+          0.043,
+          0.001
+        ]
+      },
+      "ft_per_hour_pooled": 12.9,
+      "chosen_configs": [
+        {
+          "lr": 0.0001,
+          "temperature": 1.0,
+          "epochs": 18,
+          "val": 0.737
+        },
+        {
+          "lr": 0.0001,
+          "temperature": 1.0,
+          "epochs": 28,
+          "val": 0.6875
+        },
+        {
+          "lr": 0.0001,
+          "temperature": 1.0,
+          "epochs": 30,
+          "val": 0.7084999999999999
+        }
+      ]
+    }
+  }
+}

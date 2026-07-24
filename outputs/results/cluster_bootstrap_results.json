@@ -1,0 +1,210 @@
+{
+  "l2_baseline": {
+    "seed42": {
+      "P_F1_point": 0.9052,
+      "S_F1_point": 0.8041,
+      "P": {
+        "trace_CI": {
+          "ci_low": 0.9034,
+          "ci_high": 0.9069,
+          "mean": 0.9052,
+          "std": 0.0009
+        },
+        "event_cluster_CI": {
+          "ci_low": 0.9033,
+          "ci_high": 0.907,
+          "mean": 0.9052,
+          "std": 0.0009,
+          "n_clusters": 112098
+        }
+      },
+      "S": {
+        "trace_CI": {
+          "ci_low": 0.8017,
+          "ci_high": 0.8065,
+          "mean": 0.8041,
+          "std": 0.0012
+        },
+        "event_cluster_CI": {
+          "ci_low": 0.8016,
+          "ci_high": 0.8066,
+          "mean": 0.8041,
+          "std": 0.0013,
+          "n_clusters": 112098
+        }
+      }
+    },
+    "seed123": {
+      "P_F1_point": 0.9036,
+      "S_F1_point": 0.8032,
+      "P": {
+        "trace_CI": {
+          "ci_low": 0.9019,
+          "ci_high": 0.9053,
+          "mean": 0.9036,
+          "std": 0.0009
+        },
+        "event_cluster_CI": {
+          "ci_low": 0.9018,
+          "ci_high": 0.9054,
+          "mean": 0.9036,
+          "std": 0.0009,
+          "n_clusters": 112098
+        }
+      },
+      "S": {
+        "trace_CI": {
+          "ci_low": 0.8008,
+          "ci_high": 0.8057,
+          "mean": 0.8032,
+          "std": 0.0012
+        },
+        "event_cluster_CI": {
+          "ci_low": 0.8008,
+          "ci_high": 0.8057,
+          "mean": 0.8032,
+          "std": 0.0013,
+          "n_clusters": 112098
+        }
+      }
+    },
+    "seed7": {
+      "P_F1_point": 0.9054,
+      "S_F1_point": 0.8035,
+      "P": {
+        "trace_CI": {
+          "ci_low": 0.9037,
+          "ci_high": 0.9072,
+          "mean": 0.9054,
+          "std": 0.0009
+        },
+        "event_cluster_CI": {
+          "ci_low": 0.9036,
+          "ci_high": 0.9072,
+          "mean": 0.9054,
+          "std": 0.0009,
+          "n_clusters": 112098
+        }
+      },
+      "S": {
+        "trace_CI": {
+          "ci_low": 0.8011,
+          "ci_high": 0.8059,
+          "mean": 0.8035,
+          "std": 0.0012
+        },
+        "event_cluster_CI": {
+          "ci_low": 0.801,
+          "ci_high": 0.806,
+          "mean": 0.8035,
+          "std": 0.0013,
+          "n_clusters": 112098
+        }
+      }
+    }
+  },
+  "wavelet_cr4": {
+    "seed42": {
+      "P_F1_point": 0.9757,
+      "S_F1_point": 0.7957,
+      "P": {
+        "trace_CI": {
+          "ci_low": 0.9748,
+          "ci_high": 0.9766,
+          "mean": 0.9757,
+          "std": 0.0005
+        },
+        "event_cluster_CI": {
+          "ci_low": 0.9747,
+          "ci_high": 0.9766,
+          "mean": 0.9757,
+          "std": 0.0005,
+          "n_clusters": 112098
+        }
+      },
+      "S": {
+        "trace_CI": {
+          "ci_low": 0.7933,
+          "ci_high": 0.7982,
+          "mean": 0.7957,
+          "std": 0.0012
+        },
+        "event_cluster_CI": {
+          "ci_low": 0.7932,
+          "ci_high": 0.7983,
+          "mean": 0.7957,
+          "std": 0.0013,
+          "n_clusters": 112098
+        }
+      }
+    },
+    "seed123": {
+      "P_F1_point": 0.9758,
+      "S_F1_point": 0.7959,
+      "P": {
+        "trace_CI": {
+          "ci_low": 0.9749,
+          "ci_high": 0.9767,
+          "mean": 0.9758,
+          "std": 0.0005
+        },
+        "event_cluster_CI": {
+          "ci_low": 0.9749,
+          "ci_high": 0.9767,
+          "mean": 0.9758,
+          "std": 0.0005,
+          "n_clusters": 112098
+        }
+      },
+      "S": {
+        "trace_CI": {
+          "ci_low": 0.7934,
+          "ci_high": 0.7983,
+          "mean": 0.7958,
+          "std": 0.0013
+        },
+        "event_cluster_CI": {
+          "ci_low": 0.7934,
+          "ci_high": 0.7984,
+          "mean": 0.7959,
+          "std": 0.0013,
+          "n_clusters": 112098
+        }
+      }
+    },
+    "seed7": {
+      "P_F1_point": 0.975,
+      "S_F1_point": 0.7961,
+      "P": {
+        "trace_CI": {
+          "ci_low": 0.9741,
+          "ci_high": 0.976,
+          "mean": 0.975,
+          "std": 0.0005
+        },
+        "event_cluster_CI": {
+          "ci_low": 0.9741,
+          "ci_high": 0.976,
+          "mean": 0.975,
+          "std": 0.0005,
+          "n_clusters": 112098
+        }
+      },
+      "S": {
+        "trace_CI": {
+          "ci_low": 0.7937,
+          "ci_high": 0.7986,
+          "mean": 0.7961,
+          "std": 0.0013
+        },
+        "event_cluster_CI": {
+          "ci_low": 0.7937,
+          "ci_high": 0.7987,
+          "mean": 0.7961,
+          "std": 0.0013,
+          "n_clusters": 112098
+        }
+      }
+    }
+  }
+}

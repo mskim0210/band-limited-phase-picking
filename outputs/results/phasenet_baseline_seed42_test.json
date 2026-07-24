@@ -1,0 +1,48 @@
+{
+  "config": "phasenet_baseline_seed42",
+  "checkpoint": "outputs/checkpoints/phasenet_baseline_seed42/best_model.pt",
+  "test_traces": 126567,
+  "eval_time_sec": 18.8,
+  "model": {
+    "M": 6000,
+    "N": 6000,
+    "cr": 1,
+    "matrix_type": "baseline"
+  },
+  "tolerance_0.1s": {
+    "P": {
+      "precision": 0.9774,
+      "recall": 0.9823,
+      "f1": 0.9799
+    },
+    "S": {
+      "precision": 0.8075,
+      "recall": 0.7992,
+      "f1": 0.8034
+    }
+  },
+  "tolerance_0.5s": {
+    "P": {
+      "precision": 0.9864,
+      "recall": 0.9914,
+      "f1": 0.9889
+    },
+    "S": {
+      "precision": 0.9713,
+      "recall": 0.9614,
+      "f1": 0.9663
+    }
+  },
+  "timing": {
+    "P": {
+      "mae_sec": 0.0076,
+      "mean_residual_sec": 0.0021,
+      "std_residual_sec": 0.0263
+    },
+    "S": {
+      "mae_sec": 0.0604,
+      "mean_residual_sec": 0.0057,
+      "std_residual_sec": 0.1057
+    }
+  }
+}

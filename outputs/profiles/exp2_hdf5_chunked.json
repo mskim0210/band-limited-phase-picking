@@ -1,0 +1,18 @@
+{
+  "n_traces": 50000,
+  "n_reads": 20000,
+  "layouts": {
+    "hdf5_pertrace": {
+      "mean_ms_per_trace": 0.0509,
+      "throughput_traces_per_sec": 19639.3
+    },
+    "hdf5_chunked": {
+      "mean_ms_per_trace": 0.017,
+      "throughput_traces_per_sec": 58723.4
+    },
+    "memmap": {
+      "mean_ms_per_trace": 0.004,
+      "throughput_traces_per_sec": 250610.5
+    }
+  }
+}

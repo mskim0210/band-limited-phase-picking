@@ -1,0 +1,8 @@
+{
+  "n": 1827,
+  "frac_above_12p5_mean": 0.612,
+  "frac_above_12p5_median": 0.642,
+  "frac_below_12p5_median": 0.358,
+  "pct_traces_majority_above": 0.697,
+  "frac_above_25_median": 0.208
+}

@@ -1,0 +1,8 @@
+{
+  "probe": "d logit_P(centre) / d input, |grad| summed over channels, averaged over 64 test traces; width holding 95% of mass",
+  "erf_seconds": {
+    "baseline": 5.27,
+    "dilated": 19.12,
+    "wavelet_cr4": 17.97
+  }
+}

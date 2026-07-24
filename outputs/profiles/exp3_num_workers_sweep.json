@@ -1,0 +1,77 @@
+{
+  "batch_size": 64,
+  "num_steps": 100,
+  "worker_settings": [
+    0,
+    2,
+    4,
+    8,
+    16
+  ],
+  "results": {
+    "L2": {
+      "0": {
+        "throughput_traces_per_sec": 1829.2664390524724,
+        "t_io_mean_s": 0.01734198802150786,
+        "t_total_mean_s": 0.03498670211932105,
+        "gpu_util_mean_pct": 37.0
+      },
+      "2": {
+        "throughput_traces_per_sec": 3622.876224377725,
+        "t_io_mean_s": 8.528965732289685e-05,
+        "t_total_mean_s": 0.01766552209798247,
+        "gpu_util_mean_pct": 68.5
+      },
+      "4": {
+        "throughput_traces_per_sec": 3621.9684436770267,
+        "t_io_mean_s": 8.358275905872385e-05,
+        "t_total_mean_s": 0.01766994964070618,
+        "gpu_util_mean_pct": 53.5
+      },
+      "8": {
+        "throughput_traces_per_sec": 3599.7160433941854,
+        "t_io_mean_s": 9.765001660626796e-05,
+        "t_total_mean_s": 0.017779180143235457,
+        "gpu_util_mean_pct": 0.0
+      },
+      "16": {
+        "throughput_traces_per_sec": 3598.7344325982995,
+        "t_io_mean_s": 0.00010800572603734004,
+        "t_total_mean_s": 0.01778402969118001,
+        "gpu_util_mean_pct": 0.0
+      }
+    },
+    "L0": {
+      "0": {
+        "throughput_traces_per_sec": 267.167088592712,
+        "t_io_mean_s": 0.22198258872894155,
+        "t_total_mean_s": 0.23955046385809156,
+        "gpu_util_mean_pct": 8.5
+      },
+      "2": {
+        "throughput_traces_per_sec": 322.69186128865755,
+        "t_io_mean_s": 0.17977729933077677,
+        "t_total_mean_s": 0.1983316212079798,
+        "gpu_util_mean_pct": 5.9
+      },
+      "4": {
+        "throughput_traces_per_sec": 371.2199549012227,
+        "t_io_mean_s": 0.15402988445841603,
+        "t_total_mean_s": 0.17240452501275058,
+        "gpu_util_mean_pct": 8.5
+      },
+      "8": {
+        "throughput_traces_per_sec": 466.2711972430943,
+        "t_io_mean_s": 0.11775931690871301,
+        "t_total_mean_s": 0.13725917530057744,
+        "gpu_util_mean_pct": 0.0
+      },
+      "16": {
+        "throughput_traces_per_sec": 414.8297237498574,
+        "t_io_mean_s": 0.11977185343728504,
+        "t_total_mean_s": 0.15428016927396465,
+        "gpu_util_mean_pct": 6.25
+      }
+    }
+  }
+}

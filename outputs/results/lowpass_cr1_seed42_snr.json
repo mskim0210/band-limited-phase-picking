@@ -1,0 +1,78 @@
+{
+  "config": "lowpass_cr1_seed42",
+  "checkpoint": "outputs/checkpoints/lowpass_cr1_seed42/best_model.pt",
+  "test_traces": 126567,
+  "eval_time_sec": 23.3,
+  "model": {
+    "M": 6000,
+    "N": 6000,
+    "cr": 1,
+    "matrix_type": "lowpass"
+  },
+  "tolerance_0.1s": {
+    "P": {
+      "precision": 0.9034,
+      "recall": 0.8984,
+      "f1": 0.9009
+    },
+    "S": {
+      "precision": 0.8043,
+      "recall": 0.7986,
+      "f1": 0.8015
+    }
+  },
+  "tolerance_0.5s": {
+    "P": {
+      "precision": 0.9816,
+      "recall": 0.9762,
+      "f1": 0.9789
+    },
+    "S": {
+      "precision": 0.9635,
+      "recall": 0.9567,
+      "f1": 0.96
+    }
+  },
+  "timing": {
+    "P": {
+      "mae_sec": 0.0337,
+      "mean_residual_sec": 0.0026,
+      "std_residual_sec": 0.0697
+    },
+    "S": {
+      "mae_sec": 0.0598,
+      "mean_residual_sec": 0.0075,
+      "std_residual_sec": 0.1045
+    }
+  },
+  "snr_stratified": {
+    "<5": {
+      "count": 915,
+      "p_f1_mean": 0.7763,
+      "s_f1_mean": 0.5894,
+      "p_mae_mean": 0.054,
+      "s_mae_mean": 0.089
+    },
+    "5-10": {
+      "count": 5201,
+      "p_f1_mean": 0.8114,
+      "s_f1_mean": 0.724,
+      "p_mae_mean": 0.0458,
+      "s_mae_mean": 0.0732
+    },
+    "10-20": {
+      "count": 28099,
+      "p_f1_mean": 0.8752,
+      "s_f1_mean": 0.792,
+      "p_mae_mean": 0.0381,
+      "s_mae_mean": 0.0624
+    },
+    ">20": {
+      "count": 68534,
+      "p_f1_mean": 0.9138,
+      "s_f1_mean": 0.8079,
+      "p_mae_mean": 0.0309,
+      "s_mae_mean": 0.0574
+    }
+  }
+}

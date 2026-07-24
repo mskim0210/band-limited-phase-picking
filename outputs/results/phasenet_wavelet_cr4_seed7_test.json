@@ -1,0 +1,48 @@
+{
+  "config": "phasenet_wavelet_cr4_seed7",
+  "checkpoint": "outputs/checkpoints/phasenet_wavelet_cr4_seed7/best_model.pt",
+  "test_traces": 126567,
+  "eval_time_sec": 14.5,
+  "model": {
+    "M": 1506,
+    "N": 6000,
+    "cr": 4,
+    "matrix_type": "wavelet"
+  },
+  "tolerance_0.1s": {
+    "P": {
+      "precision": 0.9703,
+      "recall": 0.9764,
+      "f1": 0.9733
+    },
+    "S": {
+      "precision": 0.7952,
+      "recall": 0.788,
+      "f1": 0.7916
+    }
+  },
+  "tolerance_0.5s": {
+    "P": {
+      "precision": 0.9813,
+      "recall": 0.9875,
+      "f1": 0.9844
+    },
+    "S": {
+      "precision": 0.9715,
+      "recall": 0.9626,
+      "f1": 0.967
+    }
+  },
+  "timing": {
+    "P": {
+      "mae_sec": 0.0143,
+      "mean_residual_sec": -0.0018,
+      "std_residual_sec": 0.0293
+    },
+    "S": {
+      "mae_sec": 0.0659,
+      "mean_residual_sec": 0.0033,
+      "std_residual_sec": 0.1087
+    }
+  }
+}

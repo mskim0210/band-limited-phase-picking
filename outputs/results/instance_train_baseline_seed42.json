@@ -1,0 +1,48 @@
+{
+  "config": "instance_baseline_seed42",
+  "checkpoint": "outputs/checkpoints/instance_baseline_seed42/best_model.pt",
+  "test_traces": 30000,
+  "eval_time_sec": 5.6,
+  "model": {
+    "M": 6000,
+    "N": 6000,
+    "cr": 1,
+    "matrix_type": "baseline"
+  },
+  "tolerance_0.1s": {
+    "P": {
+      "precision": 0.7824,
+      "recall": 0.7106,
+      "f1": 0.7448
+    },
+    "S": {
+      "precision": 0.6128,
+      "recall": 0.5151,
+      "f1": 0.5597
+    }
+  },
+  "tolerance_0.5s": {
+    "P": {
+      "precision": 0.934,
+      "recall": 0.8482,
+      "f1": 0.889
+    },
+    "S": {
+      "precision": 0.82,
+      "recall": 0.6892,
+      "f1": 0.7489
+    }
+  },
+  "timing": {
+    "P": {
+      "mae_sec": 0.0602,
+      "mean_residual_sec": 0.0028,
+      "std_residual_sec": 0.102
+    },
+    "S": {
+      "mae_sec": 0.0816,
+      "mean_residual_sec": 0.0011,
+      "std_residual_sec": 0.1199
+    }
+  }
+}
