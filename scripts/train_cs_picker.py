@@ -208,6 +208,7 @@ def run_training(
     output_dir: Path | None = None,
     dilation: int = 1,
     arch: str = "csphasenet",
+    split: str = "trace",
 ) -> Path:
     """Run full training loop with per-epoch CSV logging.
 
@@ -233,14 +234,16 @@ def run_training(
     # the 'lowpass' control also has cr=1 but reads its own encoded
     # data from cs_encoded/lowpass_cr1 (M=6000, no downsample).
     is_baseline = (matrix_type == "baseline")
+    ev = "_evsplit" if split == "event" else ""
     if is_baseline:
         # L2 baseline: use original memmap with CSPhaseNet(M=6000)
         cr = 1
         M = 6000
         if output_dir is None:
             suffix = f"_dil{dilation}" if dilation > 1 else ""
-            prefix = "phasenet_baseline" if arch == "phasenet" else f"l2_baseline{suffix}"
-            output_dir = Path("outputs/checkpoints") / f"{prefix}_seed{seed}"
+            prefix = {"phasenet": "phasenet_baseline",
+                      "eqtransformer": "eqt_baseline"}.get(arch, f"l2_baseline{suffix}")
+            output_dir = Path("outputs/checkpoints") / f"{prefix}{ev}_seed{seed}"
     else:
         M = 6000 // cr
         cs_dir = Path(cfg.data.cs_dir) / f"{matrix_type}_cr{cr}"
@@ -250,8 +253,8 @@ def run_training(
                 f"Run: python scripts/preprocess_cs.py --cr {cr} --matrix {matrix_type}"
             )
         if output_dir is None:
-            prefix = "phasenet_" if arch == "phasenet" else ""
-            output_dir = Path("outputs/checkpoints") / f"{prefix}{matrix_type}_cr{cr}_seed{seed}"
+            prefix = {"phasenet": "phasenet_", "eqtransformer": "eqt_"}.get(arch, "")
+            output_dir = Path("outputs/checkpoints") / f"{prefix}{matrix_type}_cr{cr}{ev}_seed{seed}"
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -272,14 +275,27 @@ def run_training(
     # Datasets
     if is_baseline:
         from scripts.profile_baseline import STEADMemmapDataset
-        train_ds = STEADMemmapDataset(cfg.data.memmap_dir, "train", sigma=sigma)
-        val_ds = STEADMemmapDataset(cfg.data.memmap_dir, "val", sigma=sigma)
+        make_ds = lambda s: STEADMemmapDataset(cfg.data.memmap_dir, s, sigma=sigma)  # noqa: E731
     else:
-        train_ds = CompressedSTEADDataset(cs_dir, "train", sigma=sigma)
-        val_ds = CompressedSTEADDataset(cs_dir, "val", sigma=sigma)
+        make_ds = lambda s: CompressedSTEADDataset(cs_dir, s, sigma=sigma)  # noqa: E731
+    if split == "event":
+        # Event-level (source_id-grouped) re-split over the same files (R1-6).
+        from cs_pipeline.event_split import IndexedSplitDataset, load_or_build_event_split
+        ev_idx = load_or_build_event_split(
+            cfg.data.stead_csv, "outputs/splits/event_split_seed42.npz",
+            cfg.seed, tuple(cfg.data.split_ratio),
+        )
+        base = {0: make_ds("train"), 1: make_ds("val"), 2: make_ds("test")}
+        train_ds = IndexedSplitDataset(base, ev_idx["train"])
+        val_ds = IndexedSplitDataset(base, ev_idx["val"])
+        probe = base[0]
+    else:
+        train_ds = make_ds("train")
+        val_ds = make_ds("val")
+        probe = train_ds
+    if not is_baseline and getattr(probe, "M", None) is not None:
         # Use the actual encoded length (wavelet M=1506≠6000//4; lowpass M=6000)
-        if train_ds.M is not None:
-            M = int(train_ds.M)
+        M = int(probe.M)
 
     train_loader = DataLoader(
         train_ds, batch_size=batch_size, shuffle=True,
@@ -292,11 +308,9 @@ def run_training(
 
     # Model
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    if arch == "phasenet":
-        from cs_pipeline.phasenet_wrapper import SeisBenchPhaseNet
-        model = SeisBenchPhaseNet(M=M, N=6000).to(device)
-    else:
-        model = CSPhaseNet(M=M, N=6000, base_channels=16, dilation=dilation).to(device)
+    from cs_pipeline.model_factory import build_model
+    model = build_model({"arch": arch, "M": M, "N": 6000, "base_channels": 16,
+                         "dilation": dilation}).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     criterion = nn.CrossEntropyLoss()
 
@@ -366,7 +380,7 @@ def run_training(
                 "config": {
                     "matrix_type": matrix_type, "cr": cr, "seed": seed,
                     "M": M, "N": 6000, "base_channels": 16,
-                    "dilation": dilation, "arch": arch,
+                    "dilation": dilation, "arch": arch, "split": split,
                 },
             }, ckpt_path)
             logger.info("  → Best model saved (val_loss=%.4f)", best_val_loss)
@@ -402,8 +416,10 @@ def main() -> None:
     parser.add_argument("--dilation", type=int, default=1,
                         help="Conv dilation factor (receptive-field control)")
     parser.add_argument("--arch", default="csphasenet",
-                        choices=["csphasenet", "phasenet"],
-                        help="Model architecture (phasenet = SeisBench PhaseNet)")
+                        choices=["csphasenet", "phasenet", "eqtransformer"],
+                        help="Model architecture (phasenet/eqtransformer = SeisBench)")
+    parser.add_argument("--split", default="trace", choices=["trace", "event"],
+                        help="trace = original memmap split; event = source_id-grouped re-split")
     args = parser.parse_args()
 
     cfg = OmegaConf.load(args.config)
@@ -421,6 +437,7 @@ def main() -> None:
         output_dir=out_dir,
         dilation=args.dilation,
         arch=args.arch,
+        split=args.split,
     )
 
 

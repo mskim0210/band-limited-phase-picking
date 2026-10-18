@@ -7,7 +7,7 @@ PyWavelets>=1.4
 omegaconf>=2.3
 h5py>=3.8
 obspy>=1.4          # real-data (mseed) experiments only
-seisbench>=0.5      # PhaseNet control experiment only
+seisbench>=0.5      # PhaseNet / EQTransformer control experiments only
 matplotlib>=3.7
 tqdm
 psutil              # system-level I/O profiling only

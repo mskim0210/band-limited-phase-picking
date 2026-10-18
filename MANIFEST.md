@@ -14,7 +14,7 @@ the reproduction quick-start.
 | `LICENSE` | MIT license |
 | `requirements.txt` | Python dependencies (Python 3.11, PyTorch 2.x) |
 | `.gitignore` | Excludes generated data/outputs and caches |
-| `instrument data_pick_time.csv` | Blind manual pick catalog for the SE-Korea deep-borehole network (272 events; 1,845 P / 1,842 S analyst picks). Pick times, trace-start timestamps, and instrument indices only. Reference data for Section 3.7 (Tables 13–15) |
+| `instrument data_pick_time.csv` | Blind manual pick catalog for the SE-Korea deep-borehole network (272 events; 1,845 P / 1,842 S analyst picks). Pick times, trace-start timestamps, and instrument indices only. Reference data for Section 3.7 (Tables 15–17) |
 
 ## `configs/` — experiment configuration
 
@@ -31,7 +31,10 @@ the reproduction quick-start.
 | `cs_encoder.py` | Offline pre-encoding of memmap splits into compressed memmap datasets |
 | `cs_dataset.py` | PyTorch dataset for compressed-domain training (per-trace normalization, Gaussian labels) |
 | `cs_aware_model.py` | CSPhaseNet U-Net (1.45 M params; compressed input → full-length output). `dilation` argument implements the receptive-field control of Section 3.4 |
-| `phasenet_wrapper.py` | SeisBench PhaseNet adapter (pad/trim/upsample) for the modern-picker control experiment (Section 3.4) |
+| `phasenet_wrapper.py` | SeisBench PhaseNet adapter (pad/trim/upsample) for the modern-picker control experiment (Section 3.4, Table 11) |
+| `eqt_wrapper.py` | SeisBench EQTransformer adapter (P/S heads as logits against a zero-pinned noise logit; detection head unused) for the attention-based control (Section 3.4, Table 11) |
+| `model_factory.py` | `build_model(config)`: CSPhaseNet / PhaseNet / EQTransformer from a checkpoint config |
+| `event_split.py` | Event-level (`source_id`-grouped) re-split of the fixed memmap files as `[file, row]` index arrays; `IndexedSplitDataset` (leakage control, Table 6) |
 | `profiler.py` | StepProfiler + GPU monitor used for all per-step timing (Fig. 3, Tables 1–3) |
 | `sparsity_analysis.py` | Wavelet/DCT coefficient-decay and energy-retention analysis (Fig. 1) |
 | `metrics.py` | Peak-picking precision/recall/F1 and residual metrics |
@@ -56,32 +59,36 @@ the reproduction quick-start.
 | `exp2_hdf5_chunked.py` | Chunked-HDF5 + cache vs. memmap random-read latency (Table 4) |
 | `exp3_num_workers_sweep.py` | DataLoader-worker sweep, L0 vs. L2 (Fig. 4 data) |
 
-### Training and evaluation (Sections 3.3–3.5; Tables 5–10, Figs. 5, 7–8)
+### Training and evaluation (Sections 3.3–3.5; Tables 5–12, Figs. 5, 7–8)
 
 | File | Role |
 |---|---|
-| `train_cs_picker.py` | Main training loop (baseline / compressed / LP-only; `--dilation` for the receptive-field control; `--arch phasenet` for the SeisBench PhaseNet control) |
+| `train_cs_picker.py` | Main training loop (baseline / compressed / LP-only; `--dilation` for the receptive-field control; `--arch phasenet|eqtransformer` for the SeisBench controls; `--split event` for the event-level leakage control, Table 6) |
 | `evaluate.py` | Test-set evaluation (tolerances 0.1/0.5 s, residuals, `--snr-stratified`) |
-| `cluster_bootstrap.py` | Trace-level vs. event-cluster bootstrap CIs (Table 6) |
+| `cluster_bootstrap.py` | Trace-level vs. event-cluster bootstrap CIs (Table 6); `--runs` selects checkpoints of any architecture (Table 11 CIs) |
 | `analyze_psd.py` | STEAD P/S-onset and noise PSD (Fig. 6) |
-| `analyze_s_snr_waveform.py` | Waveform-derived SNR stratification of S-F1 for all four Section-3.4 models (Table 10) |
-| `band_energy_retention.py` | Retained-band energy of the encoders (Eq. 2 values in Section 2.2 and Table 8) |
+| `analyze_s_snr_waveform.py` | Waveform-derived SNR stratification of S-F1 for all four Section-3.4 models (Table 12) |
+| `band_energy_retention.py` | Retained-band energy of the encoders (Eq. 2 values in Section 2.2 and Table 9) |
 | `measure_erf.py` | Gradient-based effective-receptive-field measurement (5.3 s baseline vs. 19.1/18.0 s; Section 3.4) |
 | `run_sparsity_analysis.py` | Driver for `sparsity_analysis.py` (Fig. 1) |
 | `run_all_experiments.sh`, `run_remaining_experiments.sh` | Batch drivers for the CR-sweep/ablation training runs |
-| `run_exp1_lowpass.sh` | LP-only control training (Table 8) |
-| `run_instance_experiment.sh` | INSTANCE retraining experiment (Tables 11–12) |
+| `run_exp1_lowpass.sh` | LP-only control training (Table 9) |
+| `run_eqt_experiment.sh` | EQTransformer full-band vs. CR = 4, three seeds (Table 11) |
+| `run_event_split_experiment.sh` | Baseline vs. CR = 4 under the event-level split, three seeds (Table 6) |
+| `waveform_distortion.py` | Waveform fidelity of band truncation: transfer function, NRMSE, onset lag, pick bias (Table 7) |
+| `summarize_revision.py` | Aggregates the revision experiments into the Table 6/7/11/17 drafts (`revision_summary.json`) |
+| `run_instance_experiment.sh` | INSTANCE retraining experiment (Tables 13–14) |
 
-### Real-data validation and adaptation (Section 3.7; Tables 13–15)
+### Real-data validation and adaptation (Section 3.7; Tables 15–17)
 
 | File | Role |
 |---|---|
 | `manual2023_catalog.py` | InSite manual picks → per-(event, station) reference catalog + dataset statistics |
 | `apply_manual2023.py` | Zero-shot evaluation of baseline/CR=2/4/8 against the manual catalog (P/S recall, precision, residuals, false triggers/hour); builds the shared window cache |
-| `adapt_manual2023.py` | Cluster-aware event-split fine-tuning and label-free distillation with threshold/tolerance sweeps (Table 15) |
+| `adapt_manual2023.py` | Cluster-aware event-split fine-tuning and label-free distillation with threshold/tolerance sweeps (Table 17) |
 | `sweep_manual2023.py` | Symmetric hyperparameter sweep for fine-tune vs. distillation (inner-validation selection) + adaptation-cost timing |
 | `station_holdout_manual2023.py` | Five-fold borehole-site hold-out for cross-station generalization of distillation |
-| `distill_fixed_recipe.py` | Fully label-free distillation with the fixed recipe (lr 1e-4, T = 1, 30 epochs; no labeled validation) |
+| `distill_fixed_recipe.py` | Fully label-free distillation with the fixed recipe (lr 1e-4, T = 1, 30 epochs; no labeled validation); `--cr {2,4,8}` gives the distillation ceiling per retained band (Table 17, Section 3.7 decomposition) |
 
 ### Figure generation
 
@@ -102,7 +109,7 @@ data) and therefore has no generation script.
 |---|---|
 | `synthetic_demo.py` | Runs the complete pipeline (synthetic waveforms → CR=4 encoding → training → evaluation → label-free distillation) with no external data, in about a minute. The reproducible test case required by the journal's code policy, given that the borehole waveforms are available on request only |
 
-## `tests/` — unit tests (78 tests, `pytest tests/`)
+## `tests/` — unit tests (100 tests, `pytest tests/`)
 
 | File | Role |
 |---|---|
@@ -111,6 +118,12 @@ data) and therefore has no generation script.
 | `test_cs_dataset.py` | Dataset shapes, normalization, label generation |
 | `test_profiler.py` | StepProfiler timing accounting |
 | `test_sparsity_analysis.py` | Sparsity/energy computations |
+| `test_eqt_wrapper.py` | EQTransformer adapter: shapes, gradient flow, zero-pinned noise logit, parameter count |
+| `test_model_factory.py` | Architecture dispatch from checkpoint configs |
+| `test_event_split.py` | Event split: no `source_id` overlap, exact row coverage, permutation inverse, index dataset |
+| `test_cluster_bootstrap_cli.py` | Run/seed expansion for bootstrap CLI |
+| `test_waveform_distortion.py` | Band-limited reconstruction, NRMSE, onset lag, transfer function |
+| `test_summarize_revision.py` | Result aggregation (mean/std, wall-clock, epochs) |
 
 ## Not included (by design)
 

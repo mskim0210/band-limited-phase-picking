@@ -58,19 +58,32 @@ def distill_fixed(model, Xtr: np.ndarray, target: np.ndarray) -> None:
 
 
 def main() -> None:
+    import argparse
+    ap = argparse.ArgumentParser(description="Fixed-recipe label-free distillation")
+    ap.add_argument("--cr", type=int, default=4, choices=[2, 4, 8],
+                    help="Student compression ratio (wavelet_cr{cr}_seed42 checkpoint)")
+    ap.add_argument("--output", default=None,
+                    help="Output JSON (default: manual2023_distill_fixed_cr{cr}.json; "
+                         "the original CR=4 file is never overwritten)")
+    args = ap.parse_args()
+    cr = args.cr
+    out_path = Path(args.output or (
+        "outputs/results/manual2023_distill_fixed_rerun.json" if cr == 4
+        else f"outputs/results/manual2023_distill_fixed_cr{cr}.json"))
+
     thr, tol_samp = 0.3, int(0.5 * FS)
     d = np.load(CACHE, allow_pickle=True)
     W, P, S, EV = d["windows"], d["p"], d["s"], d["ev"]
     cat = pd.read_csv("outputs/results/manual2023_catalog.csv", parse_dates=["ot"])
     ot_by_ev = {e: g.ot.iloc[0].timestamp() for e, g in cat.groupby("event_id")}
 
-    mat4 = create_sensing_matrix("wavelet", N=6000, CR=4)
+    mat4 = create_sensing_matrix("wavelet", N=6000, CR=cr)
     Xb = encode_norm(W, None)
     X4 = encode_norm(W, mat4)
 
     out = {"meta": {"recipe": f"lr={LR}, T={TEMP}, fixed {EPOCHS} epochs, "
                               "all training-side windows, no labeled validation",
-                    "threshold": thr, "tol_sec": 0.5},
+                    "student_cr": cr, "threshold": thr, "tol_sec": 0.5},
            "per_seed": []}
 
     for seed in (42, 123, 7):
@@ -84,7 +97,7 @@ def main() -> None:
         teacher = load_model("outputs/checkpoints/l2_baseline_seed42/best_model.pt")
         Tp = torch.softmax(logits_of(teacher, Xb[tr_idx]) / TEMP, 1).numpy()
 
-        student = load_model("outputs/checkpoints/wavelet_cr4_seed42/best_model.pt")
+        student = load_model(f"outputs/checkpoints/wavelet_cr{cr}_seed42/best_model.pt")
         t0 = time.perf_counter()
         distill_fixed(student, X4[tr_idx], Tp)
         t_train = time.perf_counter() - t0
@@ -106,7 +119,7 @@ def main() -> None:
     out["summary"]["ft_per_hour_pooled"] = round(float(np.mean(
         [r["test"]["ft_per_hour_pooled"] for r in out["per_seed"]])), 1)
 
-    path = Path("outputs/results/manual2023_distill_fixed.json")
+    path = out_path
     path.write_text(json.dumps(out, indent=1))
     logger.info("saved %s", path)
     logger.info("SUMMARY %s", json.dumps(out["summary"]))

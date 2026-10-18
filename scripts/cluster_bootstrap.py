@@ -48,7 +48,6 @@ def get_per_trace_results(
     Returns:
         List of dicts with keys: p_tp, p_fp, p_fn, s_tp, s_fp, s_fn.
     """
-    from cs_pipeline.cs_aware_model import CSPhaseNet
     from cs_pipeline.cs_dataset import CompressedSTEADDataset
     from cs_pipeline.metrics import compute_phase_metrics, pick_peaks
     from scripts.profile_baseline import STEADMemmapDataset
@@ -61,9 +60,12 @@ def get_per_trace_results(
     matrix_type = config.get("matrix_type", "wavelet")
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = CSPhaseNet(M=M, N=N, base_channels=config.get("base_channels", 16))
+    from cs_pipeline.model_factory import build_model
+    model = build_model(config)  # csphasenet / phasenet / eqtransformer
     model.load_state_dict(ckpt["model_state_dict"])
     model = model.to(device).eval()
+    logger.info("  arch=%s params=%.2fM", config.get("arch", "csphasenet"),
+                sum(p.numel() for p in model.parameters()) / 1e6)
 
     if matrix_type == "baseline":  # NOT cr==1: lowpass control has cr=1 but its own data
         test_ds = STEADMemmapDataset(cfg.data.memmap_dir, "test", sigma=10.0)
@@ -166,11 +168,21 @@ def cluster_bootstrap(
     }
 
 
+def make_run_configs(runs: list[str], seeds: list[int]) -> list[tuple[str, str, str]]:
+    """Expand checkpoint prefixes × seeds into (run, seed_name, ckpt_path) triples."""
+    return [(r, f"seed{s}", f"outputs/checkpoints/{r}_seed{s}/best_model.pt")
+            for r in runs for s in seeds]
+
+
 def main() -> None:
     """CLI entrypoint."""
     parser = argparse.ArgumentParser(description="Cluster bootstrap CI comparison")
     parser.add_argument("--config", default="configs/stead_experiment.yaml")
     parser.add_argument("--B", type=int, default=10000)
+    parser.add_argument("--runs", nargs="+", default=["l2_baseline", "wavelet_cr4"],
+                        help="checkpoint prefixes, e.g. phasenet_baseline eqt_wavelet_cr4")
+    parser.add_argument("--seeds", nargs="+", type=int, default=[42, 123, 7])
+    parser.add_argument("--output", default="outputs/results/cluster_bootstrap_results.json")
     args = parser.parse_args()
 
     from omegaconf import OmegaConf
@@ -192,14 +204,7 @@ def main() -> None:
             test_source_ids[i] = f"_nan_{i}"
 
     # Configs to evaluate
-    configs = [
-        ("l2_baseline", "seed42", "outputs/checkpoints/l2_baseline_seed42/best_model.pt"),
-        ("l2_baseline", "seed123", "outputs/checkpoints/l2_baseline_seed123/best_model.pt"),
-        ("l2_baseline", "seed7", "outputs/checkpoints/l2_baseline_seed7/best_model.pt"),
-        ("wavelet_cr4", "seed42", "outputs/checkpoints/wavelet_cr4_seed42/best_model.pt"),
-        ("wavelet_cr4", "seed123", "outputs/checkpoints/wavelet_cr4_seed123/best_model.pt"),
-        ("wavelet_cr4", "seed7", "outputs/checkpoints/wavelet_cr4_seed7/best_model.pt"),
-    ]
+    configs = make_run_configs(args.runs, args.seeds)
 
     all_results = {}
     for config_name, seed_name, ckpt_path in configs:
@@ -245,7 +250,7 @@ def main() -> None:
         all_results[config_name][seed_name] = result
 
     # Save
-    out_path = Path("outputs/results/cluster_bootstrap_results.json")
+    out_path = Path(args.output)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w") as f:
         json.dump(all_results, f, indent=2)
@@ -253,8 +258,8 @@ def main() -> None:
 
     # Summary
     print("\n=== Cluster Bootstrap Summary (P-F1) ===")
-    for config_name in ["l2_baseline", "wavelet_cr4"]:
-        for seed_name in ["seed42", "seed123", "seed7"]:
+    for config_name in args.runs:
+        for seed_name in [f"seed{s}" for s in args.seeds]:
             r = all_results[config_name][seed_name]
             pt = r["P"]["trace_CI"]
             pc = r["P"]["event_cluster_CI"]

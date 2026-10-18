@@ -208,12 +208,8 @@ def evaluate_checkpoint(
 
     # Build model
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    if config.get("arch", "csphasenet") == "phasenet":
-        from cs_pipeline.phasenet_wrapper import SeisBenchPhaseNet
-        model = SeisBenchPhaseNet(M=M, N=N)
-    else:
-        model = CSPhaseNet(M=M, N=N, base_channels=config.get("base_channels", 16),
-                           dilation=config.get("dilation", 1))
+    from cs_pipeline.model_factory import build_model
+    model = build_model(config)
     model.load_state_dict(ckpt["model_state_dict"])
     model = model.to(device).eval()
 
@@ -227,12 +223,25 @@ def evaluate_checkpoint(
             split="test", sigma=10.0, cr=None if is_baseline else cr,
             matrix_type=None if is_baseline else matrix_type,
         )
-    elif is_baseline:
-        from scripts.profile_baseline import STEADMemmapDataset
-        test_ds = STEADMemmapDataset(cfg.data.memmap_dir, "test", sigma=10.0)
     else:
-        cs_dir = Path(cfg.data.cs_dir) / f"{matrix_type}_cr{cr}"
-        test_ds = CompressedSTEADDataset(cs_dir, "test", sigma=10.0)
+        if is_baseline:
+            from scripts.profile_baseline import STEADMemmapDataset
+            make_ds = lambda s: STEADMemmapDataset(cfg.data.memmap_dir, s, sigma=10.0)  # noqa: E731
+        else:
+            cs_dir = Path(cfg.data.cs_dir) / f"{matrix_type}_cr{cr}"
+            make_ds = lambda s: CompressedSTEADDataset(cs_dir, s, sigma=10.0)  # noqa: E731
+        split = getattr(cfg, "_split", None) or config.get("split", "trace")
+        if split == "event":
+            from cs_pipeline.event_split import IndexedSplitDataset, load_or_build_event_split
+            ev_idx = load_or_build_event_split(
+                cfg.data.stead_csv, "outputs/splits/event_split_seed42.npz",
+                cfg.seed, tuple(cfg.data.split_ratio),
+            )
+            base = {0: make_ds("train"), 1: make_ds("val"), 2: make_ds("test")}
+            test_ds = IndexedSplitDataset(base, ev_idx["test"])
+            logger.info("Evaluating on EVENT-level test split: %d traces", len(test_ds))
+        else:
+            test_ds = make_ds("test")
 
     test_loader = DataLoader(
         test_ds, batch_size=batch_size, shuffle=False,
@@ -485,10 +494,13 @@ def main() -> None:
     parser.add_argument("--dataset", default="stead", choices=["stead", "instance"],
                         help="Evaluation dataset (default: stead)")
     parser.add_argument("--output", type=str, default=None, help="Output JSON path")
+    parser.add_argument("--split", default=None, choices=["trace", "event"],
+                        help="Override test split (default: value stored in checkpoint)")
     args = parser.parse_args()
 
     cfg = OmegaConf.load(args.config)
     cfg._dataset = args.dataset
+    cfg._split = args.split
 
     if args.batch_all:
         logger.info("Batch evaluating all checkpoints...")

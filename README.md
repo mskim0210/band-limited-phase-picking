@@ -44,6 +44,9 @@ cs_pipeline/            core library
   cs_aware_model.py       CSPhaseNet (U-Net, 1.45 M params; --dilation for the
                           receptive-field control)
   phasenet_wrapper.py     SeisBench PhaseNet adapter (padding/trim/upsample)
+  eqt_wrapper.py          SeisBench EQTransformer adapter (attention-based control)
+  model_factory.py        build_model(config) for the three architectures
+  event_split.py          event-level (source_id) re-split of the memmap files
 scripts/                experiment drivers (see reproduction map below)
 configs/                YAML configuration (paths, splits, seeds)
 tests/                  pytest unit tests
@@ -82,17 +85,19 @@ testing the adaptation code path.
 | Fig. 4 (workers sweep) | `scripts/exp3_num_workers_sweep.py`, `scripts/make_fig_numworkers.py` | `fig_num_workers.png` |
 | Fig. 1 (sparsity) | `scripts/run_sparsity_analysis.py` | `outputs/sparsity/` |
 | Tables 5-6, Figs. 5 and 8 (CR sweep, bootstrap, time-to-accuracy) | `scripts/train_cs_picker.py`, `scripts/evaluate.py`, `scripts/cluster_bootstrap.py` | `outputs/results/` |
-| Table 8 (ablation incl. LP-only, dilated) | `scripts/run_exp1_lowpass.sh`; `train_cs_picker.py --dilation 4` | `outputs/results/` |
-| Table 7 (SNR stratification) | `scripts/evaluate.py --snr-stratified` | `*_snr.json` |
-| Table 9 (inference throughput) | timing snippet documented in `scripts/make_fig2_cr4.py` header; `outputs/results/inference_throughput.json` | |
-| Table 10 (waveform-derived SNR) | `scripts/analyze_s_snr_waveform.py` | `s_snr_waveform.json` |
-| Er values (Section 2.2, Table 8) | `scripts/band_energy_retention.py` | `band_energy_retention.json` |
-| Fixed-recipe label-free check (Section 3.7) | `scripts/distill_fixed_recipe.py` | `manual2023_distill_fixed.json` |
+| Table 6, lower block (event-level split control) | `scripts/run_event_split_experiment.sh` (`train_cs_picker.py --split event`) | `*_evsplit_seed*_test.json` |
+| Table 7 (waveform fidelity of band truncation) | `scripts/waveform_distortion.py` | `waveform_distortion.json` |
+| Table 9 (ablation incl. LP-only, dilated) | `scripts/run_exp1_lowpass.sh`; `train_cs_picker.py --dilation 4` | `outputs/results/` |
+| Table 8 (SNR stratification) | `scripts/evaluate.py --snr-stratified` | `*_snr.json` |
+| Table 10 (inference throughput) | timing snippet documented in `scripts/make_fig2_cr4.py` header; `outputs/results/inference_throughput.json` | |
+| Table 12 (waveform-derived SNR) | `scripts/analyze_s_snr_waveform.py` | `s_snr_waveform.json` |
+| Er values (Section 2.2, Table 9) | `scripts/band_energy_retention.py` | `band_energy_retention.json` |
+| Fixed-recipe label-free check and CR = 2/8 distillation ceilings (Section 3.7, Table 17) | `scripts/distill_fixed_recipe.py --cr {2,4,8}` | `manual2023_distill_fixed*.json` |
 | Fig. 6 (PSD), Fig. 7 (example trace) | `scripts/analyze_psd.py`, `scripts/make_waveform_figure.py` | |
-| Table 11 (INSTANCE retraining) | `scripts/run_instance_experiment.sh` | `instance_*.json` |
-| Table 12 (zero-shot STEAD -> INSTANCE) | `scripts/evaluate.py --dataset instance --checkpoint <STEAD ckpt> --output outputs/results/instance_<config>.json` | `instance_l2_baseline*.json`, `instance_wavelet_cr4*.json` |
-| PhaseNet control (Section 3.4) | `scripts/train_cs_picker.py --arch phasenet` | `phasenet_*_test.json` |
-| Tables 13-15 (SE-Korea real data) | `scripts/manual2023_catalog.py`, `scripts/apply_manual2023.py`, `scripts/adapt_manual2023.py`, `scripts/sweep_manual2023.py`, `scripts/station_holdout_manual2023.py` | `manual2023_*.json` |
+| Table 13 (INSTANCE retraining) | `scripts/run_instance_experiment.sh` | `instance_*.json` |
+| Table 14 (zero-shot STEAD -> INSTANCE) | `scripts/evaluate.py --dataset instance --checkpoint <STEAD ckpt> --output outputs/results/instance_<config>.json` | `instance_l2_baseline*.json`, `instance_wavelet_cr4*.json` |
+| Table 11 (PhaseNet / EQTransformer controls with bootstrap CIs) | `scripts/train_cs_picker.py --arch phasenet`, `scripts/run_eqt_experiment.sh`, `scripts/cluster_bootstrap.py --runs phasenet_baseline phasenet_wavelet_cr4 eqt_baseline eqt_wavelet_cr4` | `phasenet_*_test.json`, `eqt_*_test.json`, `arch_bootstrap_results_*.json` |
+| Tables 15-17 (SE-Korea real data) | `scripts/manual2023_catalog.py`, `scripts/apply_manual2023.py`, `scripts/adapt_manual2023.py`, `scripts/sweep_manual2023.py`, `scripts/station_holdout_manual2023.py` | `manual2023_*.json` |
 
 Hardware used in the paper: one NVIDIA RTX 5090 (32 GB), Python 3.11,
 PyTorch 2.10 + CUDA 12.8. All experiments run on any CUDA GPU; the synthetic
