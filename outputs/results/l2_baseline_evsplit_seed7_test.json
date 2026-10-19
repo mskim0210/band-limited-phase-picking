@@ -1,0 +1,48 @@
+{
+  "config": "l2_baseline_evsplit_seed7",
+  "checkpoint": "outputs/checkpoints/l2_baseline_evsplit_seed7/best_model.pt",
+  "test_traces": 126566,
+  "eval_time_sec": 22.9,
+  "model": {
+    "M": 6000,
+    "N": 6000,
+    "cr": 1,
+    "matrix_type": "baseline"
+  },
+  "tolerance_0.1s": {
+    "P": {
+      "precision": 0.9076,
+      "recall": 0.9016,
+      "f1": 0.9046
+    },
+    "S": {
+      "precision": 0.8055,
+      "recall": 0.7988,
+      "f1": 0.8021
+    }
+  },
+  "tolerance_0.5s": {
+    "P": {
+      "precision": 0.983,
+      "recall": 0.9766,
+      "f1": 0.9798
+    },
+    "S": {
+      "precision": 0.9649,
+      "recall": 0.9569,
+      "f1": 0.9609
+    }
+  },
+  "timing": {
+    "P": {
+      "mae_sec": 0.0321,
+      "mean_residual_sec": 0.0033,
+      "std_residual_sec": 0.0685
+    },
+    "S": {
+      "mae_sec": 0.0593,
+      "mean_residual_sec": 0.0069,
+      "std_residual_sec": 0.1047
+    }
+  }
+}

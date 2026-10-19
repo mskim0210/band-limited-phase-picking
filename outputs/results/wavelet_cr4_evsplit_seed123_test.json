@@ -1,0 +1,48 @@
+{
+  "config": "wavelet_cr4_evsplit_seed123",
+  "checkpoint": "outputs/checkpoints/wavelet_cr4_evsplit_seed123/best_model.pt",
+  "test_traces": 126566,
+  "eval_time_sec": 18.4,
+  "model": {
+    "M": 1506,
+    "N": 6000,
+    "cr": 4,
+    "matrix_type": "wavelet"
+  },
+  "tolerance_0.1s": {
+    "P": {
+      "precision": 0.9719,
+      "recall": 0.9766,
+      "f1": 0.9742
+    },
+    "S": {
+      "precision": 0.7976,
+      "recall": 0.7907,
+      "f1": 0.7941
+    }
+  },
+  "tolerance_0.5s": {
+    "P": {
+      "precision": 0.9831,
+      "recall": 0.9878,
+      "f1": 0.9854
+    },
+    "S": {
+      "precision": 0.9696,
+      "recall": 0.9612,
+      "f1": 0.9654
+    }
+  },
+  "timing": {
+    "P": {
+      "mae_sec": 0.0143,
+      "mean_residual_sec": -0.0032,
+      "std_residual_sec": 0.0291
+    },
+    "S": {
+      "mae_sec": 0.0643,
+      "mean_residual_sec": -0.0021,
+      "std_residual_sec": 0.1072
+    }
+  }
+}

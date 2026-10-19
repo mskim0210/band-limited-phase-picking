@@ -110,8 +110,16 @@ every table and figure (profiling, CR sweep, ablations, ERF, INSTANCE,
 real-data adaptation), so the reported numbers can be inspected without
 retraining. The epoch logs cover all training runs; wall-clock and epoch
 counts quoted in the paper are three-seed means of these logs (e.g.,
-baseline 161 min / 32 epochs, CR = 4 76 min / 29 epochs). Checkpoints and
-encoded arrays are excluded; rerunning any script overwrites the
+baseline 161 min / 32 epochs, CR = 4 76 min / 29 epochs). The Revision 1
+additions are included as well: `eqt_*_test.json` and `*_evsplit_*_test.json`
+with their epoch logs (Tables 6 and 11), `arch_bootstrap_results_{phasenet,eqt}.json`
+(Table 11 CIs), `waveform_distortion.json` (Table 7),
+`manual2023_distill_fixed_{rerun,cr2,cr8}.json` and `manual2023_decomposition.json`
+(Table 17), `gpu_step_microbench.json` (training-step time per architecture at
+full and CR = 4 input length, Section 3.4), and `revision_summary.json`
+(aggregated drafts of Tables 6, 7, 11 and 17). The event-level split index is
+rebuilt deterministically by `cs_pipeline/event_split.py` (seed 42) on first use.
+Checkpoints and encoded arrays are excluded; rerunning any script overwrites the
 corresponding snapshot file.
 
 ## License

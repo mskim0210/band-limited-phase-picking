@@ -1,0 +1,12 @@
+{
+ "batch": 64,
+ "device": "NVIDIA GeForce RTX 5090",
+ "step_ms": {
+  "eqtransformer_M6000": 10.55,
+  "eqtransformer_M1506": 9.89,
+  "phasenet_M6000": 6.18,
+  "phasenet_M1506": 2.44,
+  "csphasenet_M6000": 17.68,
+  "csphasenet_M1506": 9.15
+ }
+}

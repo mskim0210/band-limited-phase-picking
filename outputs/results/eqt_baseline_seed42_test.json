@@ -1,0 +1,48 @@
+{
+  "config": "eqt_baseline_seed42",
+  "checkpoint": "outputs/checkpoints/eqt_baseline_seed42/best_model.pt",
+  "test_traces": 126567,
+  "eval_time_sec": 18.5,
+  "model": {
+    "M": 6000,
+    "N": 6000,
+    "cr": 1,
+    "matrix_type": "baseline"
+  },
+  "tolerance_0.1s": {
+    "P": {
+      "precision": 0.9632,
+      "recall": 0.9702,
+      "f1": 0.9667
+    },
+    "S": {
+      "precision": 0.7843,
+      "recall": 0.7652,
+      "f1": 0.7747
+    }
+  },
+  "tolerance_0.5s": {
+    "P": {
+      "precision": 0.9812,
+      "recall": 0.9883,
+      "f1": 0.9848
+    },
+    "S": {
+      "precision": 0.9754,
+      "recall": 0.9516,
+      "f1": 0.9633
+    }
+  },
+  "timing": {
+    "P": {
+      "mae_sec": 0.0102,
+      "mean_residual_sec": 0.0,
+      "std_residual_sec": 0.0336
+    },
+    "S": {
+      "mae_sec": 0.0682,
+      "mean_residual_sec": -0.0034,
+      "std_residual_sec": 0.1082
+    }
+  }
+}

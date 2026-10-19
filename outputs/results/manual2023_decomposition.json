@@ -1,0 +1,59 @@
+{
+ "meta": {
+  "source": "manual2023_distill_fixed{,_cr2,_cr8}.json + Table 15 zero-shot rows",
+  "definition": "representation_recovery = distill_ceiling - zero_shot; spectral_residual = baseline_finetuned - distill_ceiling",
+  "cr4_rerun_regression": {
+   "original": 0.585,
+   "rerun": 0.584,
+   "ok": true
+  }
+ },
+ "per_cr": {
+  "2": {
+   "zero_shot_p_f1": 0.68,
+   "distill_p_f1": [
+    0.765,
+    0.016
+   ],
+   "distill_s_f1": [
+    0.803,
+    0.005
+   ],
+   "representation_recovery_p": 0.085,
+   "spectral_residual_p_vs_baseline_ft": 0.055,
+   "gap_to_teacher_zero_shot_p": -0.015
+  },
+  "4": {
+   "zero_shot_p_f1": 0.14,
+   "distill_p_f1": [
+    0.585,
+    0.012
+   ],
+   "distill_s_f1": [
+    0.817,
+    0.01
+   ],
+   "representation_recovery_p": 0.445,
+   "spectral_residual_p_vs_baseline_ft": 0.235,
+   "gap_to_teacher_zero_shot_p": 0.165
+  },
+  "8": {
+   "zero_shot_p_f1": 0.03,
+   "distill_p_f1": [
+    0.366,
+    0.023
+   ],
+   "distill_s_f1": [
+    0.697,
+    0.011
+   ],
+   "representation_recovery_p": 0.336,
+   "spectral_residual_p_vs_baseline_ft": 0.454,
+   "gap_to_teacher_zero_shot_p": 0.384
+  }
+ },
+ "baseline": {
+  "zero_shot_p_f1": 0.75,
+  "finetuned_p_f1": 0.82
+ }
+}

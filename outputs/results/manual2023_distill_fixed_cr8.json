@@ -1,0 +1,142 @@
+{
+ "meta": {
+  "recipe": "lr=0.0001, T=1.0, fixed 30 epochs, all training-side windows, no labeled validation",
+  "student_cr": 8,
+  "threshold": 0.3,
+  "tol_sec": 0.5
+ },
+ "per_seed": [
+  {
+   "seed": 42,
+   "train_sec": 21.1,
+   "test": {
+    "P": {
+     "n_picks": 443,
+     "tp": 98,
+     "fp": 19,
+     "fn": 345,
+     "recall": 0.221,
+     "precision": 0.838,
+     "f1": 0.35,
+     "res_mean": 0.027,
+     "res_mae": 0.104,
+     "res_std": 0.15
+    },
+    "S": {
+     "n_picks": 425,
+     "tp": 234,
+     "fp": 20,
+     "fn": 191,
+     "recall": 0.551,
+     "precision": 0.921,
+     "f1": 0.689,
+     "res_mean": 0.011,
+     "res_mae": 0.074,
+     "res_std": 0.112
+    },
+    "ft_per_hour_pooled": 4.97
+   }
+  },
+  {
+   "seed": 123,
+   "train_sec": 18.4,
+   "test": {
+    "P": {
+     "n_picks": 460,
+     "tp": 123,
+     "fp": 33,
+     "fn": 337,
+     "recall": 0.267,
+     "precision": 0.788,
+     "f1": 0.399,
+     "res_mean": 0.045,
+     "res_mae": 0.107,
+     "res_std": 0.141
+    },
+    "S": {
+     "n_picks": 474,
+     "tp": 265,
+     "fp": 29,
+     "fn": 209,
+     "recall": 0.559,
+     "precision": 0.901,
+     "f1": 0.69,
+     "res_mean": 0.002,
+     "res_mae": 0.067,
+     "res_std": 0.09
+    },
+    "ft_per_hour_pooled": 7.48
+   }
+  },
+  {
+   "seed": 7,
+   "train_sec": 19.6,
+   "test": {
+    "P": {
+     "n_picks": 462,
+     "tp": 104,
+     "fp": 28,
+     "fn": 358,
+     "recall": 0.225,
+     "precision": 0.788,
+     "f1": 0.35,
+     "res_mean": 0.015,
+     "res_mae": 0.096,
+     "res_std": 0.133
+    },
+    "S": {
+     "n_picks": 457,
+     "tp": 266,
+     "fp": 24,
+     "fn": 191,
+     "recall": 0.582,
+     "precision": 0.917,
+     "f1": 0.712,
+     "res_mean": -0.005,
+     "res_mae": 0.065,
+     "res_std": 0.089
+    },
+    "ft_per_hour_pooled": 6.15
+   }
+  }
+ ],
+ "summary": {
+  "P": {
+   "f1": [
+    0.366,
+    0.023
+   ],
+   "recall": [
+    0.238,
+    0.021
+   ],
+   "precision": [
+    0.805,
+    0.024
+   ],
+   "res_mae": [
+    0.102,
+    0.005
+   ]
+  },
+  "S": {
+   "f1": [
+    0.697,
+    0.011
+   ],
+   "recall": [
+    0.564,
+    0.013
+   ],
+   "precision": [
+    0.913,
+    0.009
+   ],
+   "res_mae": [
+    0.069,
+    0.004
+   ]
+  },
+  "ft_per_hour_pooled": 6.2
+ }
+}
