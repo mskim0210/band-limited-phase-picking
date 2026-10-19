@@ -117,7 +117,7 @@ def main() -> None:
                 continue
             speed = (a_full["wall_min_mean"] / a["wall_min_mean"]) if (a_full and "wall_min_mean" in a) else np.nan
             summary["table_A"].append({"model": label, "run": run, "input": inp, **a,
-                                       "ci_p": _ci(boot, run), "speedup": speed})
+                                       "ci_p": _ci(boot, run), "ci_s": _ci(boot, run, "S"), "speedup": speed})
             md.append(f"| {label} | {params} | {inp} | {fmt_pm(a['p_f1_mean'], a['p_f1_std'])} | "
                       f"{_ci(boot, run)} | {fmt_pm(a['s_f1_mean'], a['s_f1_std'])} | "
                       f"{a.get('p_mae_ms_mean', np.nan):.0f} | {a.get('wall_min_mean', np.nan):.0f} | "

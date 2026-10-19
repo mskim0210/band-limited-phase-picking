@@ -4,7 +4,7 @@ Computes per-trace P/S picking results, then runs both trace-level
 and event-cluster bootstrap to compare CI widths.
 
 Usage:
-    python scripts/cluster_bootstrap.py --config configs/stead_experiment.yaml
+    python scripts/cluster_bootstrap.py --config configs/grsl_experiment.yaml
 """
 
 from __future__ import annotations
@@ -54,6 +54,9 @@ def get_per_trace_results(
 
     ckpt = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
     config = ckpt["config"]
+    if config.get("split", "trace") == "event":
+        raise ValueError(f"{checkpoint_path} was trained under the event-level split; this script "
+                         "evaluates on the trace-level test set, which overlaps its training rows")
     M = config["M"]
     N = config.get("N", 6000)
     cr = config.get("cr", 4)
@@ -177,7 +180,7 @@ def make_run_configs(runs: list[str], seeds: list[int]) -> list[tuple[str, str, 
 def main() -> None:
     """CLI entrypoint."""
     parser = argparse.ArgumentParser(description="Cluster bootstrap CI comparison")
-    parser.add_argument("--config", default="configs/stead_experiment.yaml")
+    parser.add_argument("--config", default="configs/grsl_experiment.yaml")
     parser.add_argument("--B", type=int, default=10000)
     parser.add_argument("--runs", nargs="+", default=["l2_baseline", "wavelet_cr4"],
                         help="checkpoint prefixes, e.g. phasenet_baseline eqt_wavelet_cr4")
