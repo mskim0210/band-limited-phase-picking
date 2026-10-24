@@ -199,6 +199,11 @@ def validate(
 # ---------------------------------------------------------------------------
 
 
+def resolve_lr(cfg: "DictConfig", override: float | None) -> float:
+    """Learning rate to use: the CLI override if given, else ``cfg.training.lr``."""
+    return float(cfg.training.lr) if override is None else float(override)
+
+
 def run_training(
     cfg: "DictConfig",
     matrix_type: str,
@@ -209,6 +214,7 @@ def run_training(
     dilation: int = 1,
     arch: str = "csphasenet",
     split: str = "trace",
+    lr: float | None = None,
 ) -> Path:
     """Run full training loop with per-epoch CSV logging.
 
@@ -219,6 +225,11 @@ def run_training(
         seed: Random seed.
         max_epochs: Override max epochs (for smoke test).
         output_dir: Override output directory.
+        dilation: Conv dilation factor (receptive-field control).
+        arch: Model architecture.
+        split: "trace" or "event" split.
+        lr: Learning-rate override (None = ``cfg.training.lr``). EQTransformer
+            needs 1e-4: at the shared 1e-3 its training loss rises after epoch ~5.
 
     Returns:
         Path to output directory with checkpoints + CSV.
@@ -260,7 +271,7 @@ def run_training(
 
     # Config
     batch_size = cfg.training.batch_size
-    lr = cfg.training.lr
+    lr = resolve_lr(cfg, lr)
     patience = cfg.training.patience
     num_workers = cfg.training.num_workers
     sigma = cfg.training.label_sigma
@@ -268,8 +279,8 @@ def run_training(
 
     level_name = "L2 baseline" if is_baseline else f"L3 {matrix_type} CR={cr}"
     logger.info(
-        "Training: %s, M=%d, seed=%d, epochs=%d, batch=%d",
-        level_name, M, seed, epochs, batch_size,
+        "Training: %s, M=%d, seed=%d, epochs=%d, batch=%d, lr=%g",
+        level_name, M, seed, epochs, batch_size, lr,
     )
 
     # Datasets
@@ -381,6 +392,7 @@ def run_training(
                     "matrix_type": matrix_type, "cr": cr, "seed": seed,
                     "M": M, "N": 6000, "base_channels": 16,
                     "dilation": dilation, "arch": arch, "split": split,
+                    "lr": lr,
                 },
             }, ckpt_path)
             logger.info("  → Best model saved (val_loss=%.4f)", best_val_loss)
@@ -402,8 +414,8 @@ def run_training(
     return output_dir
 
 
-def main() -> None:
-    """CLI entrypoint."""
+def build_parser() -> argparse.ArgumentParser:
+    """CLI parser (separate from ``main`` so tests can exercise it)."""
     parser = argparse.ArgumentParser(description="Train the compressed-domain phase picker")
     parser.add_argument("--config", default="configs/stead_experiment.yaml")
     parser.add_argument("--level", default="L3", choices=["L2", "L3"],
@@ -420,7 +432,14 @@ def main() -> None:
                         help="Model architecture (phasenet/eqtransformer = SeisBench)")
     parser.add_argument("--split", default="trace", choices=["trace", "event"],
                         help="trace = original memmap split; event = source_id-grouped re-split")
-    args = parser.parse_args()
+    parser.add_argument("--lr", type=float, default=None,
+                        help="Override training.lr (EQTransformer: 1e-4; 1e-3 diverges)")
+    return parser
+
+
+def main() -> None:
+    """CLI entrypoint."""
+    args = build_parser().parse_args()
 
     cfg = OmegaConf.load(args.config)
     out_dir = Path(args.output_dir) if args.output_dir else None
@@ -437,7 +456,7 @@ def main() -> None:
         output_dir=out_dir,
         dilation=args.dilation,
         arch=args.arch,
-        split=args.split,
+        split=args.split, lr=args.lr,
     )
 
 

@@ -25,6 +25,74 @@
    "n_components": 29937
   }
  },
+ "time_domain": {
+  "CR2": {
+   "mean": 88.05,
+   "median": 95.16,
+   "std": 15.96,
+   "n_components": 29937
+  },
+  "CR4": {
+   "mean": 65.98,
+   "median": 71.24,
+   "std": 28.38,
+   "n_components": 29937
+  },
+  "CR8": {
+   "mean": 40.31,
+   "median": 33.62,
+   "std": 30.01,
+   "n_components": 29937
+  },
+  "CR16": {
+   "mean": 20.93,
+   "median": 10.96,
+   "std": 24.15,
+   "n_components": 29937
+  }
+ },
+ "coef_vs_time_domain": {
+  "CR2": {
+   "mean_pts": -0.018,
+   "median_pts": -0.0,
+   "p5_pts": -0.046,
+   "p95_pts": 0.011,
+   "max_abs_pts": 21.935,
+   "within_pts": 0.3,
+   "within_frac": 0.976,
+   "n_components": 29937
+  },
+  "CR4": {
+   "mean_pts": -0.048,
+   "median_pts": -0.0,
+   "p5_pts": -0.259,
+   "p95_pts": 0.011,
+   "max_abs_pts": 69.967,
+   "within_pts": 0.3,
+   "within_frac": 0.947,
+   "n_components": 29937
+  },
+  "CR8": {
+   "mean_pts": -0.094,
+   "median_pts": -0.001,
+   "p5_pts": -0.508,
+   "p95_pts": -0.0,
+   "max_abs_pts": 90.697,
+   "within_pts": 0.3,
+   "within_frac": 0.931,
+   "n_components": 29937
+  },
+  "CR16": {
+   "mean_pts": -0.08,
+   "median_pts": -0.001,
+   "p5_pts": -0.497,
+   "p95_pts": -0.0,
+   "max_abs_pts": 294.877,
+   "within_pts": 0.3,
+   "within_frac": 0.927,
+   "n_components": 29937
+  }
+ },
  "dct_first_M": {
   "CR4": {
    "mean": 67.54,
@@ -37,6 +105,12 @@
   "wavelet": "db4",
   "level": 6,
   "mode": "symmetric",
+  "m_out": {
+   "2": 3004,
+   "4": 1506,
+   "8": 756,
+   "16": 382
+  },
   "split": "test",
   "n_traces": 10000,
   "seed": 42

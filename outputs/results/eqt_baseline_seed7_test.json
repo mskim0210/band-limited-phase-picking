@@ -2,7 +2,7 @@
   "config": "eqt_baseline_seed7",
   "checkpoint": "outputs/checkpoints/eqt_baseline_seed7/best_model.pt",
   "test_traces": 126567,
-  "eval_time_sec": 18.5,
+  "eval_time_sec": 18.6,
   "model": {
     "M": 6000,
     "N": 6000,
@@ -11,38 +11,38 @@
   },
   "tolerance_0.1s": {
     "P": {
-      "precision": 0.9628,
-      "recall": 0.9717,
-      "f1": 0.9672
+      "precision": 0.9777,
+      "recall": 0.9828,
+      "f1": 0.9802
     },
     "S": {
-      "precision": 0.7772,
-      "recall": 0.7558,
-      "f1": 0.7663
+      "precision": 0.8063,
+      "recall": 0.7982,
+      "f1": 0.8022
     }
   },
   "tolerance_0.5s": {
     "P": {
-      "precision": 0.98,
-      "recall": 0.9892,
-      "f1": 0.9846
+      "precision": 0.9869,
+      "recall": 0.9921,
+      "f1": 0.9895
     },
     "S": {
-      "precision": 0.9738,
-      "recall": 0.9469,
-      "f1": 0.9601
+      "precision": 0.9726,
+      "recall": 0.9628,
+      "f1": 0.9677
     }
   },
   "timing": {
     "P": {
-      "mae_sec": 0.0098,
-      "mean_residual_sec": 0.002,
-      "std_residual_sec": 0.0334
+      "mae_sec": 0.008,
+      "mean_residual_sec": -0.0001,
+      "std_residual_sec": 0.0259
     },
     "S": {
-      "mae_sec": 0.0693,
-      "mean_residual_sec": 0.0183,
-      "std_residual_sec": 0.1095
+      "mae_sec": 0.0613,
+      "mean_residual_sec": 0.0046,
+      "std_residual_sec": 0.1043
     }
   }
 }

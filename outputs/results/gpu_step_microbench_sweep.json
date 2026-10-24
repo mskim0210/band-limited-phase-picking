@@ -1,0 +1,106 @@
+{
+ "device": "NVIDIA GeForce RTX 5090",
+ "torch": "2.10.0+cu128",
+ "n_iter": 30,
+ "lengths": [
+  6000,
+  1506
+ ],
+ "by_batch": {
+  "64": {
+   "csphasenet_M6000": {
+    "step_ms": 18.05,
+    "cpu_enqueue_ms": 16.07
+   },
+   "csphasenet_M1506": {
+    "step_ms": 9.26,
+    "cpu_enqueue_ms": 8.24
+   },
+   "phasenet_M6000": {
+    "step_ms": 6.21,
+    "cpu_enqueue_ms": 5.63
+   },
+   "phasenet_M1506": {
+    "step_ms": 2.58,
+    "cpu_enqueue_ms": 2.61
+   },
+   "eqtransformer_M6000": {
+    "step_ms": 12.05,
+    "cpu_enqueue_ms": 10.96
+   },
+   "eqtransformer_M1506": {
+    "step_ms": 10.83,
+    "cpu_enqueue_ms": 11.03
+   },
+   "csphasenet_speedup": 1.95,
+   "phasenet_speedup": 2.41,
+   "eqtransformer_speedup": 1.11
+  },
+  "256": {
+   "csphasenet_M6000": {
+    "step_ms": 97.19,
+    "cpu_enqueue_ms": 88.25
+   },
+   "csphasenet_M1506": {
+    "step_ms": 30.67,
+    "cpu_enqueue_ms": 27.98
+   },
+   "phasenet_M6000": {
+    "step_ms": 21.14,
+    "cpu_enqueue_ms": 18.89
+   },
+   "phasenet_M1506": {
+    "step_ms": 6.06,
+    "cpu_enqueue_ms": 5.25
+   },
+   "eqtransformer_M6000": {
+    "step_ms": 28.25,
+    "cpu_enqueue_ms": 27.18
+   },
+   "eqtransformer_M1506": {
+    "step_ms": 13.21,
+    "cpu_enqueue_ms": 11.83
+   },
+   "csphasenet_speedup": 3.17,
+   "phasenet_speedup": 3.49,
+   "eqtransformer_speedup": 2.14
+  },
+  "1024": {
+   "csphasenet_M6000": {
+    "step_ms": 401.79,
+    "cpu_enqueue_ms": 365.64
+   },
+   "csphasenet_M1506": {
+    "step_ms": 232.07,
+    "cpu_enqueue_ms": 211.93
+   },
+   "phasenet_M6000": {
+    "step_ms": 92.18,
+    "cpu_enqueue_ms": 81.53
+   },
+   "phasenet_M1506": {
+    "step_ms": 24.06,
+    "cpu_enqueue_ms": 21.42
+   },
+   "eqtransformer_M6000": {
+    "step_ms": 119.2,
+    "cpu_enqueue_ms": 114.71
+   },
+   "eqtransformer_M1506": {
+    "step_ms": 37.76,
+    "cpu_enqueue_ms": 35.58
+   },
+   "csphasenet_speedup": 1.73,
+   "phasenet_speedup": 3.83,
+   "eqtransformer_speedup": 3.16
+  }
+ },
+ "cuda_kernels_per_step_b64": {
+  "csphasenet_M6000": 537,
+  "csphasenet_M1506": 400,
+  "phasenet_M6000": 320,
+  "phasenet_M1506": 321,
+  "eqtransformer_M6000": 1435,
+  "eqtransformer_M1506": 1371
+ }
+}

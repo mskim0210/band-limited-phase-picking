@@ -175,6 +175,9 @@ def main() -> None:
                       f"{100 * r['spectral_residual_p_vs_baseline_ft']:.0f} |")
         md.append("")
 
+    # ---- GPU step microbenchmark sweep (scripts/gpu_step_microbench.py) ----
+    summary["gpu_sweep"] = _load(root / "results" / "gpu_step_microbench_sweep.json")
+
     Path(args.json_out).write_text(json.dumps(summary, indent=1, default=float))
     Path(args.md_out).write_text("\n".join(md))
     logger.info("saved %s and %s", args.json_out, args.md_out)

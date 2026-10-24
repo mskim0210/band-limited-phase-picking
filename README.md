@@ -21,7 +21,7 @@ teacher–student self-distillation.
 ```bash
 pip install -r requirements.txt
 python examples/synthetic_demo.py   # full pipeline on synthetic waveforms, ~1 min
-pytest tests/                       # 78 unit tests
+pytest tests/                       # 122 unit tests
 ```
 
 `examples/synthetic_demo.py` generates synthetic borehole-like 3-component
@@ -90,13 +90,17 @@ testing the adaptation code path.
 | Table 9 (ablation incl. LP-only, dilated) | `scripts/run_exp1_lowpass.sh`; `train_cs_picker.py --dilation 4` | `outputs/results/` |
 | Table 8 (SNR stratification) | `scripts/evaluate.py --snr-stratified` | `*_snr.json` |
 | Table 10 (inference throughput) | timing snippet documented in `scripts/make_fig2_cr4.py` header; `outputs/results/inference_throughput.json` | |
-| Table 12 (waveform-derived SNR) | `scripts/analyze_s_snr_waveform.py` | `s_snr_waveform.json` |
-| Er values (Section 2.2, Table 9) | `scripts/band_energy_retention.py` | `band_energy_retention.json` |
+| Table 12 (waveform-derived SNR, P-F1 and S-F1) | `scripts/analyze_s_snr_waveform.py` | `s_snr_waveform.json` |
+| P-onset / pre-P noise energy fraction above the CR cutoffs, STEAD vs. Korean borehole, one definition (Sections 3.3, 3.7, 4) | `scripts/onset_spectral_fraction.py` | `onset_spectral_fraction.json` |
+| Event-level split audit: source_id disjointness and row coverage (Section 3.1, Table 6) | `scripts/check_event_split.py` | `event_split_check.json` |
+| Paired ΔF1 bootstrap CIs (CR = 4 vs. full-band for CSPhaseNet / PhaseNet / EQTransformer; LP-only vs. baseline; same resampled traces for both models and all seeds; Table 11 notes) | `scripts/paired_bootstrap.py --B 10000` | `paired_bootstrap.json` (per-trace counts cached under `per_trace_counts/`, rebuilt by the script) |
+| Er values and their comparison with the time-domain energy ratio of the encoder output (Section 2.2, Table 9) | `scripts/band_energy_retention.py` | `band_energy_retention.json` |
 | Fixed-recipe label-free check and CR = 2/8 distillation ceilings (Section 3.7, Table 17) | `scripts/distill_fixed_recipe.py --cr {2,4,8}` | `manual2023_distill_fixed*.json` |
 | Fig. 6 (PSD), Fig. 7 (example trace) | `scripts/analyze_psd.py`, `scripts/make_waveform_figure.py` | |
 | Table 13 (INSTANCE retraining) | `scripts/run_instance_experiment.sh` | `instance_*.json` |
 | Table 14 (zero-shot STEAD -> INSTANCE) | `scripts/evaluate.py --dataset instance --checkpoint <STEAD ckpt> --output outputs/results/instance_<config>.json` | `instance_l2_baseline*.json`, `instance_wavelet_cr4*.json` |
-| Table 11 (PhaseNet / EQTransformer controls with bootstrap CIs) | `scripts/train_cs_picker.py --arch phasenet`, `scripts/run_eqt_experiment.sh`, `scripts/cluster_bootstrap.py --runs phasenet_baseline phasenet_wavelet_cr4 eqt_baseline eqt_wavelet_cr4` | `phasenet_*_test.json`, `eqt_*_test.json`, `arch_bootstrap_results_*.json` |
+| Table 11 (PhaseNet / EQTransformer controls with bootstrap CIs) | `scripts/train_cs_picker.py --arch phasenet`, `scripts/run_eqt_experiment.sh` (EQTransformer at lr = 1e-4, see the script header), `scripts/cluster_bootstrap.py --runs phasenet_baseline phasenet_wavelet_cr4 eqt_baseline eqt_wavelet_cr4` | `phasenet_*_test.json`, `eqt_*_test.json`, `arch_bootstrap_results_*.json` |
+| Section 3.4 GPU training-step sweep (step time, CPU enqueue time and CUDA kernel count per architecture at M = 6000 and 1506, batch 64/256/1024) | `scripts/gpu_step_microbench.py --batches 64 256 1024` | `gpu_step_microbench_sweep.json` |
 | Tables 15-17 (SE-Korea real data) | `scripts/manual2023_catalog.py`, `scripts/apply_manual2023.py`, `scripts/adapt_manual2023.py`, `scripts/sweep_manual2023.py`, `scripts/station_holdout_manual2023.py` | `manual2023_*.json` |
 
 Hardware used in the paper: one NVIDIA RTX 5090 (32 GB), Python 3.11,
@@ -115,8 +119,9 @@ additions are included as well: `eqt_*_test.json` and `*_evsplit_*_test.json`
 with their epoch logs (Tables 6 and 11), `arch_bootstrap_results_{phasenet,eqt}.json`
 (Table 11 CIs), `waveform_distortion.json` (Table 7),
 `manual2023_distill_fixed_{rerun,cr2,cr8}.json` and `manual2023_decomposition.json`
-(Table 17), `gpu_step_microbench.json` (training-step time per architecture at
-full and CR = 4 input length, Section 3.4), and `revision_summary.json`
+(Table 17), `gpu_step_microbench_sweep.json` (training-step time, CPU enqueue time and
+CUDA kernel count per architecture at full and CR = 4 input length for batch
+sizes 64, 256 and 1,024, Section 3.4), and `revision_summary.json`
 (aggregated drafts of Tables 6, 7, 11 and 17). The event-level split index is
 rebuilt deterministically by `cs_pipeline/event_split.py` (seed 42) on first use.
 Checkpoints and encoded arrays are excluded; rerunning any script overwrites the

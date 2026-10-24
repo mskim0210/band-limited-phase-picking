@@ -67,13 +67,17 @@ the reproduction quick-start.
 | `evaluate.py` | Test-set evaluation (tolerances 0.1/0.5 s, residuals, `--snr-stratified`) |
 | `cluster_bootstrap.py` | Trace-level vs. event-cluster bootstrap CIs (Table 6); `--runs` selects checkpoints of any architecture (Table 11 CIs) |
 | `analyze_psd.py` | STEAD P/S-onset and noise PSD (Fig. 6) |
-| `analyze_s_snr_waveform.py` | Waveform-derived SNR stratification of S-F1 for all four Section-3.4 models (Table 12) |
-| `band_energy_retention.py` | Retained-band energy of the encoders (Eq. 2 values in Section 2.2 and Table 9) |
+| `analyze_s_snr_waveform.py` | Waveform-derived SNR stratification of P-F1 and S-F1 for all four Section-3.4 models (Table 12) |
+| `onset_spectral_fraction.py` | Per-trace share of P-onset and pre-P noise power above the CR = 2/4/8 cutoffs for the STEAD test set and the Korean borehole windows under one definition (`onset_spectral_fraction.json`; Sections 3.3, 3.7, 4) |
+| `check_event_split.py` | Audit of the cached event-level split: unique events, pairwise source_id intersections, exact row coverage (`event_split_check.json`) |
+| `paired_bootstrap.py` | Paired bootstrap CIs of ΔF1 between two checkpoints evaluated on the same test traces, with trace-level and event-cluster (source_id) resampling (seed-mean and per-seed; `paired_bootstrap.json`; Table 11 notes, LP-only control) |
+| `band_energy_retention.py` | Retained-band coefficient-energy fraction of the encoders (Eq. 2; Section 2.2, Table 9) and its comparison with the time-domain energy ratio of the encoder output |
 | `measure_erf.py` | Gradient-based effective-receptive-field measurement (5.3 s baseline vs. 19.1/18.0 s; Section 3.4) |
 | `run_sparsity_analysis.py` | Driver for `sparsity_analysis.py` (Fig. 1) |
 | `run_all_experiments.sh`, `run_remaining_experiments.sh` | Batch drivers for the CR-sweep/ablation training runs |
 | `run_exp1_lowpass.sh` | LP-only control training (Table 9) |
-| `run_eqt_experiment.sh` | EQTransformer full-band vs. CR = 4, three seeds (Table 11) |
+| `run_eqt_experiment.sh` | EQTransformer full-band vs. CR = 4, three seeds at lr = 1e-4 (at the shared 1e-3 its training loss rises after epoch ~5; see the header), then test evaluation, bootstrap CIs and the revision summary (Table 11) |
+| `gpu_step_microbench.py` | GPU training-step microbenchmark per architecture and input length over a batch-size sweep: step time, CPU enqueue time, CUDA kernel count (`gpu_step_microbench_sweep.json`; Section 3.4 speedup discussion) |
 | `run_event_split_experiment.sh` | Baseline vs. CR = 4 under the event-level split, three seeds (Table 6) |
 | `waveform_distortion.py` | Waveform fidelity of band truncation: transfer function, NRMSE, onset lag, pick bias (Table 7) |
 | `summarize_revision.py` | Aggregates the revision experiments into the Table 6/7/11/17 drafts (`revision_summary.json`) |
@@ -109,7 +113,7 @@ data) and therefore has no generation script.
 |---|---|
 | `synthetic_demo.py` | Runs the complete pipeline (synthetic waveforms → CR=4 encoding → training → evaluation → label-free distillation) with no external data, in about a minute. The reproducible test case required by the journal's code policy, given that the borehole waveforms are available on request only |
 
-## `tests/` — unit tests (100 tests, `pytest tests/`)
+## `tests/` — unit tests (122 tests, `pytest tests/`)
 
 | File | Role |
 |---|---|
@@ -124,6 +128,12 @@ data) and therefore has no generation script.
 | `test_cluster_bootstrap_cli.py` | Run/seed expansion for bootstrap CLI |
 | `test_waveform_distortion.py` | Band-limited reconstruction, NRMSE, onset lag, transfer function |
 | `test_summarize_revision.py` | Result aggregation (mean/std, wall-clock, epochs) |
+| `test_train_cli_lr.py` | `--lr` override of the training CLI (default None, recorded in the checkpoint config) |
+| `test_snr_waveform_ps.py` | Per-trace P/S F1 scoring and SNR-bin summary of the waveform-SNR stratification |
+| `test_onset_spectral_fraction.py` | Onset energy fraction above a cutoff (tones, out-of-range windows, summary statistics) |
+| `test_check_event_split.py` | Event-split audit: pairwise overlap counts and row-coverage check |
+| `test_paired_bootstrap.py` | F1 from counts, per-trace count arrays, paired ΔF1 CI (identical models → zero; superset model → CI above zero; per-seed entries) |
+| `test_band_energy_retention.py` | Coefficient-energy fraction vs. time-domain energy ratio of the encoder output (tone, periodization identity, symmetric-extension inflation, difference statistics) |
 
 ## Not included (by design)
 

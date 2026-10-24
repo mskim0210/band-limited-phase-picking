@@ -2,7 +2,7 @@
   "config": "eqt_wavelet_cr4_seed123",
   "checkpoint": "outputs/checkpoints/eqt_wavelet_cr4_seed123/best_model.pt",
   "test_traces": 126567,
-  "eval_time_sec": 16.8,
+  "eval_time_sec": 16.7,
   "model": {
     "M": 1506,
     "N": 6000,
@@ -11,38 +11,38 @@
   },
   "tolerance_0.1s": {
     "P": {
-      "precision": 0.952,
-      "recall": 0.9501,
-      "f1": 0.951
+      "precision": 0.9659,
+      "recall": 0.9714,
+      "f1": 0.9687
     },
     "S": {
-      "precision": 0.7586,
-      "recall": 0.7309,
-      "f1": 0.7445
+      "precision": 0.783,
+      "recall": 0.7637,
+      "f1": 0.7732
     }
   },
   "tolerance_0.5s": {
     "P": {
-      "precision": 0.976,
-      "recall": 0.974,
-      "f1": 0.975
+      "precision": 0.9807,
+      "recall": 0.9862,
+      "f1": 0.9834
     },
     "S": {
-      "precision": 0.9772,
-      "recall": 0.9416,
-      "f1": 0.9591
+      "precision": 0.9752,
+      "recall": 0.9512,
+      "f1": 0.9631
     }
   },
   "timing": {
     "P": {
-      "mae_sec": 0.0166,
-      "mean_residual_sec": -0.0053,
-      "std_residual_sec": 0.0399
+      "mae_sec": 0.015,
+      "mean_residual_sec": -0.0038,
+      "std_residual_sec": 0.0321
     },
     "S": {
-      "mae_sec": 0.076,
-      "mean_residual_sec": -0.0024,
-      "std_residual_sec": 0.1148
+      "mae_sec": 0.0691,
+      "mean_residual_sec": 0.0055,
+      "std_residual_sec": 0.1088
     }
   }
 }

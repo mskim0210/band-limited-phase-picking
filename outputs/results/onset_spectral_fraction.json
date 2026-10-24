@@ -1,0 +1,187 @@
+{
+ "definition": "Z component; onset window [P, P+win], noise window [P-win, P]; Welch nperseg=128 noverlap=64; fraction of PSD power above cutoff",
+ "fs_hz": 100,
+ "cutoffs_hz": [
+  25.0,
+  12.5,
+  6.25
+ ],
+ "windows_sec": [
+  3.0,
+  1.0
+ ],
+ "stead_test": {
+  "n_traces_with_p": 102833,
+  "win3s_above25Hz": {
+   "p_onset": {
+    "n": 102827,
+    "median": 0.03773144168373228,
+    "mean": 0.12414173648317889,
+    "majority_above": 0.05646376924348663
+   },
+   "pre_p_noise": {
+    "n": 102784,
+    "median": 0.06822435177599276,
+    "mean": 0.13332492322861753,
+    "majority_above": 0.041990971357409715
+   }
+  },
+  "win3s_above12.5Hz": {
+   "p_onset": {
+    "n": 102827,
+    "median": 0.40831096759144303,
+    "mean": 0.424363433124693,
+    "majority_above": 0.4373851225845352
+   },
+   "pre_p_noise": {
+    "n": 102784,
+    "median": 0.288974782202685,
+    "mean": 0.32975234804553055,
+    "majority_above": 0.30904615504358657
+   }
+  },
+  "win3s_above6.25Hz": {
+   "p_onset": {
+    "n": 102827,
+    "median": 0.8364048893714742,
+    "mean": 0.7330637769728847,
+    "majority_above": 0.7935756172989584
+   },
+   "pre_p_noise": {
+    "n": 102784,
+    "median": 0.4796462680107688,
+    "mean": 0.46730790679181605,
+    "majority_above": 0.48435554171855544
+   }
+  },
+  "win1s_above25Hz": {
+   "p_onset": {
+    "n": 102827,
+    "median": 0.03223777346249729,
+    "mean": 0.13237773349271467,
+    "majority_above": 0.07416340066324993
+   },
+   "pre_p_noise": {
+    "n": 102819,
+    "median": 0.06677321202579317,
+    "mean": 0.13732874674259432,
+    "majority_above": 0.05017555121135199
+   }
+  },
+  "win1s_above12.5Hz": {
+   "p_onset": {
+    "n": 102827,
+    "median": 0.4484549426319966,
+    "mean": 0.4535345147330885,
+    "majority_above": 0.46893325682943193
+   },
+   "pre_p_noise": {
+    "n": 102819,
+    "median": 0.3012591669594679,
+    "mean": 0.34641666748483146,
+    "majority_above": 0.3381476186307978
+   }
+  },
+  "win1s_above6.25Hz": {
+   "p_onset": {
+    "n": 102827,
+    "median": 0.874234774298539,
+    "mean": 0.7473733652100104,
+    "majority_above": 0.7993036848298598
+   },
+   "pre_p_noise": {
+    "n": 102819,
+    "median": 0.4983922525620589,
+    "mean": 0.4820126335972249,
+    "majority_above": 0.49896419922387886
+   }
+  }
+ },
+ "korean_borehole": {
+  "n_traces_with_p": 1827,
+  "win3s_above25Hz": {
+   "p_onset": {
+    "n": 1827,
+    "median": 0.20483004454323006,
+    "mean": 0.2300351947700449,
+    "majority_above": 0.06130268199233716
+   },
+   "pre_p_noise": {
+    "n": 1827,
+    "median": 0.02049191436587175,
+    "mean": 0.03690110412988565,
+    "majority_above": 0.0
+   }
+  },
+  "win3s_above12.5Hz": {
+   "p_onset": {
+    "n": 1827,
+    "median": 0.6421222040125284,
+    "mean": 0.6044852750271141,
+    "majority_above": 0.6825396825396826
+   },
+   "pre_p_noise": {
+    "n": 1827,
+    "median": 0.244525745440041,
+    "mean": 0.28263846831707323,
+    "majority_above": 0.13519430760810072
+   }
+  },
+  "win3s_above6.25Hz": {
+   "p_onset": {
+    "n": 1827,
+    "median": 0.8680492625258451,
+    "mean": 0.8095829313147208,
+    "majority_above": 0.9288451012588944
+   },
+   "pre_p_noise": {
+    "n": 1827,
+    "median": 0.602583973128538,
+    "mean": 0.5936112691270385,
+    "majority_above": 0.6606458675424193
+   }
+  },
+  "win1s_above25Hz": {
+   "p_onset": {
+    "n": 1827,
+    "median": 0.23034534099567927,
+    "mean": 0.25221248207469066,
+    "majority_above": 0.0842911877394636
+   },
+   "pre_p_noise": {
+    "n": 1827,
+    "median": 0.020169124554134048,
+    "mean": 0.039749219707860016,
+    "majority_above": 0.0005473453749315818
+   }
+  },
+  "win1s_above12.5Hz": {
+   "p_onset": {
+    "n": 1827,
+    "median": 0.6627770179406299,
+    "mean": 0.6335783310179393,
+    "majority_above": 0.7301587301587301
+   },
+   "pre_p_noise": {
+    "n": 1827,
+    "median": 0.26465990307831616,
+    "mean": 0.30798927394543535,
+    "majority_above": 0.18828680897646416
+   }
+  },
+  "win1s_above6.25Hz": {
+   "p_onset": {
+    "n": 1827,
+    "median": 0.8750616979328264,
+    "mean": 0.828851889930081,
+    "majority_above": 0.9551176792556103
+   },
+   "pre_p_noise": {
+    "n": 1827,
+    "median": 0.640985112225609,
+    "mean": 0.6172542764483725,
+    "majority_above": 0.7115489874110563
+   }
+  }
+ }
+}

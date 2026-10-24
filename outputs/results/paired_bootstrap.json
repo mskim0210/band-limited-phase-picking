@@ -1,0 +1,443 @@
+{
+ "B": 10000,
+ "seeds": [
+  42,
+  123,
+  7
+ ],
+ "resampling": "with replacement; identical resampled traces (or event clusters) for both models and all seeds; percentile 95% CI of the seed-mean difference. Top-level P/S: trace-level; event_cluster: traces sharing a STEAD source_id drawn together",
+ "pairs": {
+  "CSPhaseNet": {
+   "run_a": "l2_baseline",
+   "run_b": "wavelet_cr4",
+   "f1_a": {
+    "P": 0.9047,
+    "S": 0.8036
+   },
+   "f1_b": {
+    "P": 0.9755,
+    "S": 0.7959
+   },
+   "B": 10000,
+   "n_traces": 126567,
+   "n_seeds": 3,
+   "resampling": "trace",
+   "P": {
+    "delta_pts": 7.08,
+    "ci_low_pts": 6.92,
+    "ci_high_pts": 7.24,
+    "per_seed": [
+     {
+      "delta_pts": 7.05,
+      "ci_low_pts": 6.88,
+      "ci_high_pts": 7.23
+     },
+     {
+      "delta_pts": 7.22,
+      "ci_low_pts": 7.04,
+      "ci_high_pts": 7.39
+     },
+     {
+      "delta_pts": 6.96,
+      "ci_low_pts": 6.78,
+      "ci_high_pts": 7.14
+     }
+    ]
+   },
+   "S": {
+    "delta_pts": -0.77,
+    "ci_low_pts": -0.9,
+    "ci_high_pts": -0.64,
+    "per_seed": [
+     {
+      "delta_pts": -0.84,
+      "ci_low_pts": -1.0,
+      "ci_high_pts": -0.67
+     },
+     {
+      "delta_pts": -0.74,
+      "ci_low_pts": -0.9,
+      "ci_high_pts": -0.57
+     },
+     {
+      "delta_pts": -0.73,
+      "ci_low_pts": -0.9,
+      "ci_high_pts": -0.57
+     }
+    ]
+   },
+   "event_cluster": {
+    "P": {
+     "delta_pts": 7.08,
+     "ci_low_pts": 6.91,
+     "ci_high_pts": 7.25,
+     "per_seed": [
+      {
+       "delta_pts": 7.05,
+       "ci_low_pts": 6.87,
+       "ci_high_pts": 7.23
+      },
+      {
+       "delta_pts": 7.22,
+       "ci_low_pts": 7.03,
+       "ci_high_pts": 7.4
+      },
+      {
+       "delta_pts": 6.96,
+       "ci_low_pts": 6.78,
+       "ci_high_pts": 7.15
+      }
+     ]
+    },
+    "S": {
+     "delta_pts": -0.77,
+     "ci_low_pts": -0.9,
+     "ci_high_pts": -0.64,
+     "per_seed": [
+      {
+       "delta_pts": -0.84,
+       "ci_low_pts": -1.0,
+       "ci_high_pts": -0.67
+      },
+      {
+       "delta_pts": -0.74,
+       "ci_low_pts": -0.9,
+       "ci_high_pts": -0.57
+      },
+      {
+       "delta_pts": -0.73,
+       "ci_low_pts": -0.9,
+       "ci_high_pts": -0.57
+      }
+     ]
+    },
+    "n_clusters": 112098,
+    "resampling": "event_cluster"
+   }
+  },
+  "PhaseNet": {
+   "run_a": "phasenet_baseline",
+   "run_b": "phasenet_wavelet_cr4",
+   "f1_a": {
+    "P": 0.9799,
+    "S": 0.8037
+   },
+   "f1_b": {
+    "P": 0.9731,
+    "S": 0.7921
+   },
+   "B": 10000,
+   "n_traces": 126567,
+   "n_seeds": 3,
+   "resampling": "trace",
+   "P": {
+    "delta_pts": -0.68,
+    "ci_low_pts": -0.74,
+    "ci_high_pts": -0.62,
+    "per_seed": [
+     {
+      "delta_pts": -0.71,
+      "ci_low_pts": -0.79,
+      "ci_high_pts": -0.64
+     },
+     {
+      "delta_pts": -0.65,
+      "ci_low_pts": -0.73,
+      "ci_high_pts": -0.57
+     },
+     {
+      "delta_pts": -0.67,
+      "ci_low_pts": -0.75,
+      "ci_high_pts": -0.59
+     }
+    ]
+   },
+   "S": {
+    "delta_pts": -1.16,
+    "ci_low_pts": -1.29,
+    "ci_high_pts": -1.03,
+    "per_seed": [
+     {
+      "delta_pts": -1.08,
+      "ci_low_pts": -1.25,
+      "ci_high_pts": -0.91
+     },
+     {
+      "delta_pts": -1.24,
+      "ci_low_pts": -1.42,
+      "ci_high_pts": -1.07
+     },
+     {
+      "delta_pts": -1.15,
+      "ci_low_pts": -1.33,
+      "ci_high_pts": -0.98
+     }
+    ]
+   },
+   "event_cluster": {
+    "P": {
+     "delta_pts": -0.68,
+     "ci_low_pts": -0.74,
+     "ci_high_pts": -0.62,
+     "per_seed": [
+      {
+       "delta_pts": -0.71,
+       "ci_low_pts": -0.79,
+       "ci_high_pts": -0.64
+      },
+      {
+       "delta_pts": -0.65,
+       "ci_low_pts": -0.73,
+       "ci_high_pts": -0.57
+      },
+      {
+       "delta_pts": -0.67,
+       "ci_low_pts": -0.75,
+       "ci_high_pts": -0.59
+      }
+     ]
+    },
+    "S": {
+     "delta_pts": -1.16,
+     "ci_low_pts": -1.29,
+     "ci_high_pts": -1.03,
+     "per_seed": [
+      {
+       "delta_pts": -1.08,
+       "ci_low_pts": -1.26,
+       "ci_high_pts": -0.91
+      },
+      {
+       "delta_pts": -1.24,
+       "ci_low_pts": -1.42,
+       "ci_high_pts": -1.07
+      },
+      {
+       "delta_pts": -1.15,
+       "ci_low_pts": -1.33,
+       "ci_high_pts": -0.98
+      }
+     ]
+    },
+    "n_clusters": 112098,
+    "resampling": "event_cluster"
+   }
+  },
+  "EQTransformer": {
+   "run_a": "eqt_baseline",
+   "run_b": "eqt_wavelet_cr4",
+   "f1_a": {
+    "P": 0.9804,
+    "S": 0.8036
+   },
+   "f1_b": {
+    "P": 0.9683,
+    "S": 0.773
+   },
+   "B": 10000,
+   "n_traces": 126567,
+   "n_seeds": 3,
+   "resampling": "trace",
+   "P": {
+    "delta_pts": -1.2,
+    "ci_low_pts": -1.27,
+    "ci_high_pts": -1.14,
+    "per_seed": [
+     {
+      "delta_pts": -1.31,
+      "ci_low_pts": -1.4,
+      "ci_high_pts": -1.22
+     },
+     {
+      "delta_pts": -1.2,
+      "ci_low_pts": -1.28,
+      "ci_high_pts": -1.11
+     },
+     {
+      "delta_pts": -1.1,
+      "ci_low_pts": -1.19,
+      "ci_high_pts": -1.02
+     }
+    ]
+   },
+   "S": {
+    "delta_pts": -3.07,
+    "ci_low_pts": -3.2,
+    "ci_high_pts": -2.93,
+    "per_seed": [
+     {
+      "delta_pts": -3.27,
+      "ci_low_pts": -3.46,
+      "ci_high_pts": -3.08
+     },
+     {
+      "delta_pts": -3.09,
+      "ci_low_pts": -3.28,
+      "ci_high_pts": -2.9
+     },
+     {
+      "delta_pts": -2.84,
+      "ci_low_pts": -3.03,
+      "ci_high_pts": -2.65
+     }
+    ]
+   },
+   "event_cluster": {
+    "P": {
+     "delta_pts": -1.2,
+     "ci_low_pts": -1.27,
+     "ci_high_pts": -1.14,
+     "per_seed": [
+      {
+       "delta_pts": -1.31,
+       "ci_low_pts": -1.4,
+       "ci_high_pts": -1.22
+      },
+      {
+       "delta_pts": -1.2,
+       "ci_low_pts": -1.28,
+       "ci_high_pts": -1.11
+      },
+      {
+       "delta_pts": -1.1,
+       "ci_low_pts": -1.19,
+       "ci_high_pts": -1.02
+      }
+     ]
+    },
+    "S": {
+     "delta_pts": -3.07,
+     "ci_low_pts": -3.2,
+     "ci_high_pts": -2.93,
+     "per_seed": [
+      {
+       "delta_pts": -3.27,
+       "ci_low_pts": -3.46,
+       "ci_high_pts": -3.07
+      },
+      {
+       "delta_pts": -3.09,
+       "ci_low_pts": -3.28,
+       "ci_high_pts": -2.91
+      },
+      {
+       "delta_pts": -2.84,
+       "ci_low_pts": -3.03,
+       "ci_high_pts": -2.65
+      }
+     ]
+    },
+    "n_clusters": 112098,
+    "resampling": "event_cluster"
+   }
+  },
+  "CSPhaseNet LP-only": {
+   "run_a": "l2_baseline",
+   "run_b": "lowpass_cr1",
+   "f1_a": {
+    "P": 0.9047,
+    "S": 0.8036
+   },
+   "f1_b": {
+    "P": 0.9002,
+    "S": 0.799
+   },
+   "B": 10000,
+   "n_traces": 126567,
+   "n_seeds": 3,
+   "resampling": "trace",
+   "P": {
+    "delta_pts": -0.45,
+    "ci_low_pts": -0.53,
+    "ci_high_pts": -0.38,
+    "per_seed": [
+     {
+      "delta_pts": -0.42,
+      "ci_low_pts": -0.53,
+      "ci_high_pts": -0.31
+     },
+     {
+      "delta_pts": -0.29,
+      "ci_low_pts": -0.4,
+      "ci_high_pts": -0.18
+     },
+     {
+      "delta_pts": -0.65,
+      "ci_low_pts": -0.75,
+      "ci_high_pts": -0.54
+     }
+    ]
+   },
+   "S": {
+    "delta_pts": -0.46,
+    "ci_low_pts": -0.55,
+    "ci_high_pts": -0.37,
+    "per_seed": [
+     {
+      "delta_pts": -0.26,
+      "ci_low_pts": -0.41,
+      "ci_high_pts": -0.12
+     },
+     {
+      "delta_pts": -0.64,
+      "ci_low_pts": -0.77,
+      "ci_high_pts": -0.5
+     },
+     {
+      "delta_pts": -0.48,
+      "ci_low_pts": -0.61,
+      "ci_high_pts": -0.34
+     }
+    ]
+   },
+   "event_cluster": {
+    "P": {
+     "delta_pts": -0.45,
+     "ci_low_pts": -0.53,
+     "ci_high_pts": -0.38,
+     "per_seed": [
+      {
+       "delta_pts": -0.42,
+       "ci_low_pts": -0.53,
+       "ci_high_pts": -0.32
+      },
+      {
+       "delta_pts": -0.29,
+       "ci_low_pts": -0.4,
+       "ci_high_pts": -0.19
+      },
+      {
+       "delta_pts": -0.65,
+       "ci_low_pts": -0.75,
+       "ci_high_pts": -0.53
+      }
+     ]
+    },
+    "S": {
+     "delta_pts": -0.46,
+     "ci_low_pts": -0.55,
+     "ci_high_pts": -0.37,
+     "per_seed": [
+      {
+       "delta_pts": -0.26,
+       "ci_low_pts": -0.41,
+       "ci_high_pts": -0.12
+      },
+      {
+       "delta_pts": -0.64,
+       "ci_low_pts": -0.77,
+       "ci_high_pts": -0.5
+      },
+      {
+       "delta_pts": -0.48,
+       "ci_low_pts": -0.61,
+       "ci_high_pts": -0.34
+      }
+     ]
+    },
+    "n_clusters": 112098,
+    "resampling": "event_cluster"
+   }
+  }
+ }
+}

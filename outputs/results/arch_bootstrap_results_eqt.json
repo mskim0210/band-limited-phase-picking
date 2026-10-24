@@ -1,103 +1,103 @@
 {
   "eqt_baseline": {
     "seed42": {
-      "P_F1_point": 0.9667,
-      "S_F1_point": 0.7747,
+      "P_F1_point": 0.9802,
+      "S_F1_point": 0.8045,
       "P": {
         "trace_CI": {
-          "ci_low": 0.9656,
-          "ci_high": 0.9678,
-          "mean": 0.9667,
-          "std": 0.0005
+          "ci_low": 0.9794,
+          "ci_high": 0.981,
+          "mean": 0.9802,
+          "std": 0.0004
         },
         "event_cluster_CI": {
-          "ci_low": 0.9656,
-          "ci_high": 0.9678,
-          "mean": 0.9667,
-          "std": 0.0005,
+          "ci_low": 0.9794,
+          "ci_high": 0.981,
+          "mean": 0.9802,
+          "std": 0.0004,
           "n_clusters": 112098
         }
       },
       "S": {
         "trace_CI": {
-          "ci_low": 0.7721,
-          "ci_high": 0.7772,
-          "mean": 0.7746,
-          "std": 0.0013
+          "ci_low": 0.8021,
+          "ci_high": 0.8069,
+          "mean": 0.8045,
+          "std": 0.0012
         },
         "event_cluster_CI": {
-          "ci_low": 0.772,
-          "ci_high": 0.7773,
-          "mean": 0.7747,
+          "ci_low": 0.8021,
+          "ci_high": 0.8071,
+          "mean": 0.8045,
           "std": 0.0013,
           "n_clusters": 112098
         }
       }
     },
     "seed123": {
-      "P_F1_point": 0.9668,
-      "S_F1_point": 0.7773,
+      "P_F1_point": 0.9806,
+      "S_F1_point": 0.8041,
       "P": {
         "trace_CI": {
-          "ci_low": 0.9657,
-          "ci_high": 0.9678,
-          "mean": 0.9668,
-          "std": 0.0005
+          "ci_low": 0.9798,
+          "ci_high": 0.9814,
+          "mean": 0.9806,
+          "std": 0.0004
         },
         "event_cluster_CI": {
-          "ci_low": 0.9657,
-          "ci_high": 0.9679,
-          "mean": 0.9668,
-          "std": 0.0006,
+          "ci_low": 0.9798,
+          "ci_high": 0.9814,
+          "mean": 0.9806,
+          "std": 0.0004,
           "n_clusters": 112098
         }
       },
       "S": {
         "trace_CI": {
-          "ci_low": 0.7748,
-          "ci_high": 0.7799,
-          "mean": 0.7773,
-          "std": 0.0013
+          "ci_low": 0.8017,
+          "ci_high": 0.8065,
+          "mean": 0.8041,
+          "std": 0.0012
         },
         "event_cluster_CI": {
-          "ci_low": 0.7747,
-          "ci_high": 0.7799,
-          "mean": 0.7773,
+          "ci_low": 0.8016,
+          "ci_high": 0.8066,
+          "mean": 0.8041,
           "std": 0.0013,
           "n_clusters": 112098
         }
       }
     },
     "seed7": {
-      "P_F1_point": 0.9672,
-      "S_F1_point": 0.7663,
+      "P_F1_point": 0.9802,
+      "S_F1_point": 0.8022,
       "P": {
         "trace_CI": {
-          "ci_low": 0.9661,
-          "ci_high": 0.9683,
-          "mean": 0.9672,
-          "std": 0.0005
+          "ci_low": 0.9794,
+          "ci_high": 0.9811,
+          "mean": 0.9802,
+          "std": 0.0004
         },
         "event_cluster_CI": {
-          "ci_low": 0.9661,
-          "ci_high": 0.9683,
-          "mean": 0.9672,
-          "std": 0.0005,
+          "ci_low": 0.9794,
+          "ci_high": 0.9811,
+          "mean": 0.9802,
+          "std": 0.0004,
           "n_clusters": 112098
         }
       },
       "S": {
         "trace_CI": {
-          "ci_low": 0.7638,
-          "ci_high": 0.7689,
-          "mean": 0.7663,
+          "ci_low": 0.7998,
+          "ci_high": 0.8047,
+          "mean": 0.8022,
           "std": 0.0013
         },
         "event_cluster_CI": {
-          "ci_low": 0.7637,
-          "ci_high": 0.769,
-          "mean": 0.7664,
-          "std": 0.0014,
+          "ci_low": 0.7997,
+          "ci_high": 0.8047,
+          "mean": 0.8022,
+          "std": 0.0013,
           "n_clusters": 112098
         }
       }
@@ -105,103 +105,103 @@
   },
   "eqt_wavelet_cr4": {
     "seed42": {
-      "P_F1_point": 0.9509,
-      "S_F1_point": 0.7453,
+      "P_F1_point": 0.9671,
+      "S_F1_point": 0.7718,
       "P": {
         "trace_CI": {
-          "ci_low": 0.9496,
-          "ci_high": 0.9522,
-          "mean": 0.9509,
-          "std": 0.0007
+          "ci_low": 0.966,
+          "ci_high": 0.9681,
+          "mean": 0.9671,
+          "std": 0.0005
         },
         "event_cluster_CI": {
-          "ci_low": 0.9496,
-          "ci_high": 0.9522,
-          "mean": 0.9509,
-          "std": 0.0007,
+          "ci_low": 0.966,
+          "ci_high": 0.9681,
+          "mean": 0.9671,
+          "std": 0.0005,
           "n_clusters": 112098
         }
       },
       "S": {
         "trace_CI": {
-          "ci_low": 0.7426,
-          "ci_high": 0.748,
-          "mean": 0.7453,
-          "std": 0.0014
+          "ci_low": 0.7693,
+          "ci_high": 0.7744,
+          "mean": 0.7718,
+          "std": 0.0013
         },
         "event_cluster_CI": {
-          "ci_low": 0.7426,
-          "ci_high": 0.7481,
-          "mean": 0.7453,
-          "std": 0.0014,
+          "ci_low": 0.7692,
+          "ci_high": 0.7745,
+          "mean": 0.7719,
+          "std": 0.0013,
           "n_clusters": 112098
         }
       }
     },
     "seed123": {
-      "P_F1_point": 0.951,
-      "S_F1_point": 0.7445,
+      "P_F1_point": 0.9687,
+      "S_F1_point": 0.7732,
       "P": {
         "trace_CI": {
-          "ci_low": 0.9497,
-          "ci_high": 0.9523,
-          "mean": 0.951,
-          "std": 0.0007
+          "ci_low": 0.9676,
+          "ci_high": 0.9697,
+          "mean": 0.9687,
+          "std": 0.0005
         },
         "event_cluster_CI": {
-          "ci_low": 0.9497,
-          "ci_high": 0.9524,
-          "mean": 0.951,
-          "std": 0.0007,
+          "ci_low": 0.9676,
+          "ci_high": 0.9697,
+          "mean": 0.9687,
+          "std": 0.0005,
           "n_clusters": 112098
         }
       },
       "S": {
         "trace_CI": {
-          "ci_low": 0.7418,
-          "ci_high": 0.7472,
-          "mean": 0.7445,
-          "std": 0.0014
+          "ci_low": 0.7706,
+          "ci_high": 0.7758,
+          "mean": 0.7732,
+          "std": 0.0013
         },
         "event_cluster_CI": {
-          "ci_low": 0.7417,
-          "ci_high": 0.7471,
-          "mean": 0.7445,
-          "std": 0.0014,
+          "ci_low": 0.7706,
+          "ci_high": 0.7759,
+          "mean": 0.7732,
+          "std": 0.0013,
           "n_clusters": 112098
         }
       }
     },
     "seed7": {
-      "P_F1_point": 0.9505,
-      "S_F1_point": 0.7426,
+      "P_F1_point": 0.9692,
+      "S_F1_point": 0.7738,
       "P": {
         "trace_CI": {
-          "ci_low": 0.9492,
-          "ci_high": 0.9519,
-          "mean": 0.9505,
-          "std": 0.0007
+          "ci_low": 0.9682,
+          "ci_high": 0.9702,
+          "mean": 0.9692,
+          "std": 0.0005
         },
         "event_cluster_CI": {
-          "ci_low": 0.9492,
-          "ci_high": 0.9519,
-          "mean": 0.9505,
-          "std": 0.0007,
+          "ci_low": 0.9681,
+          "ci_high": 0.9702,
+          "mean": 0.9692,
+          "std": 0.0005,
           "n_clusters": 112098
         }
       },
       "S": {
         "trace_CI": {
-          "ci_low": 0.7399,
-          "ci_high": 0.7452,
-          "mean": 0.7425,
-          "std": 0.0014
+          "ci_low": 0.7713,
+          "ci_high": 0.7764,
+          "mean": 0.7738,
+          "std": 0.0013
         },
         "event_cluster_CI": {
-          "ci_low": 0.7398,
-          "ci_high": 0.7453,
-          "mean": 0.7425,
-          "std": 0.0014,
+          "ci_low": 0.7712,
+          "ci_high": 0.7765,
+          "mean": 0.7739,
+          "std": 0.0013,
           "n_clusters": 112098
         }
       }

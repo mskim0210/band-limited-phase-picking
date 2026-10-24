@@ -1,4 +1,4 @@
-"""Waveform-derived SNR stratification of S-F1 for the four §III-D models.
+"""Waveform-derived SNR stratification of P-F1 and S-F1 for the four Section 3.4 models.
 
 Explains the SNR-dependent sign flip of the S-F1
 change at CR=4 (+3.0 pp below 5 dB, -0.9 pp above 20 dB) with data rather
@@ -56,10 +56,11 @@ def load_model(ck: str) -> CSPhaseNet:
 
 
 @torch.no_grad()
-def per_trace_s_f1(model, X: np.ndarray, s_true: np.ndarray,
-                   keep: np.ndarray, bs: int = 256) -> np.ndarray:
-    """Per-trace S-F1 (tol=10 samples) for kept traces; NaN elsewhere."""
-    out = np.full(len(X), np.nan, np.float32)
+def per_trace_f1(model, X: np.ndarray, p_true: np.ndarray, s_true: np.ndarray,
+                 keep: np.ndarray, bs: int = 256) -> dict[str, np.ndarray]:
+    """Per-trace P-F1 and S-F1 (tol=10 samples) for kept traces; NaN elsewhere."""
+    out = {"p": np.full(len(X), np.nan, np.float32),
+           "s": np.full(len(X), np.nan, np.float32)}
     idx = np.where(keep)[0]
     for i0 in range(0, len(idx), bs):
         b = idx[i0:i0 + bs]
@@ -68,11 +69,23 @@ def per_trace_s_f1(model, X: np.ndarray, s_true: np.ndarray,
         probs = torch.softmax(model(x.to(DEV)), 1).cpu().numpy()
         for j, t in enumerate(b):
             pred = pick_peaks(probs[j], threshold=0.3)
-            m = compute_phase_metrics(pred["S"], [int(s_true[t])], 10)
-            out[t] = m["f1"]
+            out["p"][t] = compute_phase_metrics(pred["P"], [int(p_true[t])], 10)["f1"]
+            out["s"][t] = compute_phase_metrics(pred["S"], [int(s_true[t])], 10)["f1"]
         if i0 % (bs * 100) == 0:
             logger.info("  %d/%d", i0, len(idx))
     return out
+
+
+def bin_summary(f1: dict[str, np.ndarray], snr: np.ndarray, keep: np.ndarray,
+                bins: list[tuple[str, float, float]]) -> dict[str, dict]:
+    """Trace count and mean per-trace P-F1 / S-F1 in each SNR bin."""
+    res: dict[str, dict] = {}
+    for lab, lo, hi in bins:
+        m = keep & (snr >= lo) & (snr < hi)
+        res[lab] = {"n": int(m.sum())}
+        for ph in ("p", "s"):
+            res[lab][f"{ph}_f1"] = round(float(np.nanmean(f1[ph][m])), 4) if m.any() else float("nan")
+    return res
 
 
 def main() -> None:
@@ -95,6 +108,14 @@ def main() -> None:
             logger.info("snr %d/%d", i, len(W))
     keep = ~np.isnan(snr)
     logger.info("SNR computed for %d/%d traces", keep.sum(), len(W))
+    excluded = {"total_test_traces": int(len(W)),
+                "no_s_pick": int((s < 0).sum()),
+                "p_before_3s": int(((p < win) & (s >= 0)).sum()),
+                "p_window_past_end": int(((p + win >= 6000) & (p >= win) & (s >= 0)).sum()),
+                "zero_noise_variance": int((keep.sum() == 0) or (len(W) - (s < 0).sum() - ((p < win) & (s >= 0)).sum() - ((p + win >= 6000) & (p >= win) & (s >= 0)).sum() - keep.sum())),
+                "kept": int(keep.sum())}
+    logger.info("exclusions: %s", excluded)
+
 
     models = {
         "baseline": ("outputs/checkpoints/l2_baseline_seed42/best_model.pt",
@@ -110,17 +131,13 @@ def main() -> None:
     res = {}
     for name, (ck, xpath) in models.items():
         X = np.load(xpath, mmap_mode="r")
-        f1 = per_trace_s_f1(load_model(ck), X, s, keep)
-        res[name] = {}
-        for lab, lo, hi in BINS:
-            m = keep & (snr >= lo) & (snr < hi)
-            res[name][lab] = {"n": int(m.sum()),
-                              "s_f1": round(float(np.nanmean(f1[m])), 4)}
-        logger.info("%s: %s", name, {k: v["s_f1"] for k, v in res[name].items()})
+        f1 = per_trace_f1(load_model(ck), X, p, s, keep)
+        res[name] = bin_summary(f1, snr, keep, BINS)
+        logger.info("%s: %s", name, {k: (v["p_f1"], v["s_f1"]) for k, v in res[name].items()})
 
     out = {"snr_definition": "10*log10(var(Z[P..P+3s])/var(Z[P-3s..P]))",
            "tolerance_samples": 10, "threshold": 0.3, "seed": 42,
-           "results": res}
+           "exclusions": excluded, "results": res}
     Path("outputs/results/s_snr_waveform.json").write_text(
         json.dumps(out, indent=2))
     print(json.dumps(out["results"], indent=1))
