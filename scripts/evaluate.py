@@ -46,12 +46,20 @@ logger = logging.getLogger(__name__)
 # INSTANCE cross-domain dataset
 # ---------------------------------------------------------------------------
 
+# STEAD stores every trace as E, N, Z (the memmap keeps that order), whereas
+# the SeisBench default output order is Z, N, E.  Zero-shot transfer must feed
+# the STEAD-trained models the same component order they were trained on.
+STEAD_COMPONENT_ORDER = "ENZ"
+
 
 class InstanceCropDataset(torch.utils.data.Dataset):
     """INSTANCE dataset with P-arrival-centered crop to (3, 6000).
 
     Crops 120s traces to 60s centered on P-arrival.
     Optionally applies CS encoding (wavelet/DCT) for L3 evaluation.
+    Components are read in STEAD order (E, N, Z) and each window is
+    standardized in its input domain (after encoding for compressed models),
+    exactly as the STEAD training loaders do.
 
     Args:
         split: 'test' (default for cross-domain eval).
@@ -69,7 +77,7 @@ class InstanceCropDataset(torch.utils.data.Dataset):
     ) -> None:
         import seisbench.data as sbd
 
-        self._instance = sbd.InstanceCounts()
+        self._instance = sbd.InstanceCounts(component_order=STEAD_COMPONENT_ORDER)
         mask = self._instance.metadata["split"] == split
         self._indices = mask[mask].index.tolist()
         self._sigma = sigma
@@ -134,15 +142,19 @@ class InstanceCropDataset(torch.utils.data.Dataset):
         if s_sample >= 0:
             s_sample = s_sample - start
 
-        # Std normalization
+        # Std normalization in the raw domain (per-trace scale only)
         std = cropped.std()
         if std > 1e-8:
             cropped /= std
 
-        # CS encoding if applicable
+        # CS encoding if applicable, then standardization in the compressed
+        # domain (CompressedSTEADDataset normalizes after encoding)
         wf_tensor = torch.from_numpy(cropped)
         if self._matrix is not None:
             wf_tensor = self._matrix.encode(wf_tensor.unsqueeze(0)).squeeze(0)
+            enc_std = wf_tensor.std()
+            if enc_std > 1e-8:
+                wf_tensor = wf_tensor / enc_std
 
         # Label at 6000 length (original domain)
         label = self._make_label(

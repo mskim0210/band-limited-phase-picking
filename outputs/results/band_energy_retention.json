@@ -95,9 +95,9 @@
  },
  "dct_first_M": {
   "CR4": {
-   "mean": 67.54,
-   "median": 74.19,
-   "std": 29.29,
+   "mean": 67.39,
+   "median": 73.96,
+   "std": 29.33,
    "n_components": 29937
   }
  },

@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 # Retained coefficient arrays [cA_L, cD_L, ...] per nominal CR (db4, L=6)
 KEEP = {2: 6, 4: 5, 8: 4, 16: 3}
-DCT_M = {4: 1506}
+DCT_M = {4: 1500}  # coefficients the DCT encoder keeps (N // CR); its output is zero-padded to 1506
 # Encoder output length per nominal CR (symmetric extension, N = 6000)
 M_OUT = {2: 3004, 4: 1506, 8: 756, 16: 382}
 WAVELET, LEVEL, MODE = "db4", 6, "symmetric"

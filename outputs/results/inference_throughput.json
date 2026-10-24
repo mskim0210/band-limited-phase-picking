@@ -1,8 +1,27 @@
 {
-  "baseline": 7159,
-  "dilated": 7055,
-  "cr4": 6175,
-  "baseline_forward_only": 7589,
-  "dilated_forward_only": 7538,
-  "cr4_forward_only": 21799
+ "baseline_forward_only": 7723,
+ "dilated_forward_only": 7552,
+ "cr4_forward_only": 22094,
+ "baseline": 7372,
+ "dilated": 7216,
+ "cr4": 5225,
+ "ratios": {
+  "cr4_forward_only_vs_baseline": 2.86,
+  "cr4_end_to_end_vs_baseline": 0.71,
+  "dilated_forward_only_vs_baseline": 0.98
+ },
+ "meta": {
+  "batch": 256,
+  "n_batches": 30,
+  "warmup": 5,
+  "device": "NVIDIA GeForce RTX 5090",
+  "cpu_threads": 1,
+  "encoder": "wavelet db4 L=6, CR=4 (PyWavelets)",
+  "checkpoints": {
+   "baseline": "outputs/checkpoints/l2_baseline_seed42/best_model.pt",
+   "dilated": "outputs/checkpoints/l2_baseline_dil4_seed42/best_model.pt",
+   "cr4": "outputs/checkpoints/wavelet_cr4_seed42/best_model.pt"
+  },
+  "unit": "traces per second"
+ }
 }

@@ -12,10 +12,20 @@ from __future__ import annotations
 import numpy as np
 import pywt
 
-from scripts.band_energy_retention import component_retention, diff_stats
+from cs_pipeline.sensing_matrix import create_sensing_matrix
+from scripts.band_energy_retention import DCT_M, component_retention, diff_stats
 
 FS = 100.0
 N = 6000
+
+
+def test_dct_energy_uses_the_coefficient_count_the_encoder_keeps() -> None:
+    """The DCT encoder keeps N // CR = 1500 coefficients and zero-pads to an
+    output length of 1506; the energy fraction must count the kept
+    coefficients, not the output length."""
+    enc = create_sensing_matrix("dct", N=N, CR=4)
+    assert enc.M == 1506 and enc._dct_keep == 1500
+    assert DCT_M[4] == enc._dct_keep
 
 
 def test_low_frequency_tone_is_fully_retained_in_both_measures() -> None:

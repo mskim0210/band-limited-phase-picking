@@ -36,17 +36,23 @@ def aggregate_runs(name: str, seeds: tuple[int, ...] = SEEDS,
     """Mean/std of test metrics, wall-clock and epochs over the seeds of one run.
 
     Reads ``{root}/results/{name}_seed{s}_test.json`` and
-    ``{root}/checkpoints/{name}_seed{s}/epoch_log.csv``.  Returns None when no
-    seed has a result file yet.
+    ``{root}/checkpoints/{name}_seed{s}/epoch_log.csv``.  Runs that exist only
+    inside the consolidated ``test_evaluation_summary.json`` (the original CR
+    sweep and matrix ablation) are read from its ``per_run`` block.  Returns
+    None when no seed has a result anywhere.
     """
     root = Path(root)
     rows = []
+    consolidated = _consolidated_runs(root)
     for s in seeds:
         rp = root / "results" / f"{name}_seed{s}_test.json"
         lp = root / "checkpoints" / f"{name}_seed{s}" / "epoch_log.csv"
-        if not rp.exists():
+        if rp.exists():
+            d = json.load(open(rp))
+        elif f"{name}_seed{s}" in consolidated:
+            d = consolidated[f"{name}_seed{s}"]
+        else:
             continue
-        d = json.load(open(rp))
         t = d["tolerance_0.1s"]
         tm = d.get("timing", {})
         row = {"seed": s, "p_f1": t["P"]["f1"], "s_f1": t["S"]["f1"],
@@ -70,6 +76,53 @@ def aggregate_runs(name: str, seeds: tuple[int, ...] = SEEDS,
             out[f"{k}_mean"] = float(np.nanmean(v))
             out[f"{k}_std"] = float(np.nanstd(v))
     return out
+
+
+def _consolidated_runs(root: Path) -> dict:
+    """``per_run`` entries of ``results/test_evaluation_summary.json`` (or {})."""
+    p = Path(root) / "results" / "test_evaluation_summary.json"
+    if not p.exists():
+        return {}
+    return json.load(open(p)).get("per_run", {})
+
+
+FIXED_RECIPE_FILES = ((2, "manual2023_distill_fixed_cr2.json"),
+                      (4, "manual2023_distill_fixed_rerun.json"),
+                      (8, "manual2023_distill_fixed_cr8.json"))
+
+
+def fixed_recipe_rows(root: str | Path) -> list[dict]:
+    """Fixed-recipe label-free distillation per student CR (Table 17 rows).
+
+    One row per ``manual2023_distill_fixed_*.json``: held-out P-F1 and S-F1
+    (mean, std over the three event splits) and the mean distillation time
+    (the ``timing`` block when present, otherwise the mean of the per-seed
+    ``train_sec`` values).
+    """
+    rows = []
+    for cr, fname in FIXED_RECIPE_FILES:
+        d = _load(Path(root) / "results" / fname)
+        if d is None:
+            continue
+        s = d["summary"]
+        t = s.get("timing", {}).get("train_sec_mean")
+        if t is None and d.get("per_seed"):
+            t = round(float(np.mean([r["train_sec"] for r in d["per_seed"]])), 1)
+        rows.append({"cr": cr, "p_f1": tuple(s["P"]["f1"]), "s_f1": tuple(s["S"]["f1"]),
+                     "train_sec_mean": t})
+    return rows
+
+
+def table_d_markdown(rows: list[dict]) -> str:
+    md = ["## Table D — Fixed-recipe label-free distillation vs. student CR "
+          "(Korean borehole, held-out events, 3 splits; Table 17 fixed-recipe rows)\n",
+          "| Student | Distilled P-F1 | Distilled S-F1 | Distillation time (s, mean) |",
+          "|---|---|---|---|"]
+    for r in rows:
+        t = "—" if r["train_sec_mean"] is None else f"{r['train_sec_mean']:.1f}"
+        md.append(f"| CR = {r['cr']} | {fmt_pm(*r['p_f1'], digits=3)} | "
+                  f"{fmt_pm(*r['s_f1'], digits=3)} | {t} |")
+    return "\n".join(md) + "\n"
 
 
 def _ci(boot: dict | None, run: str, phase: str = "P") -> str:
@@ -162,18 +215,11 @@ def main() -> None:
                       f"{r['p_bias_ms']:+.1f} | {r['s_bias_ms']:+.1f} | {r['p_f1']:.4f} | {r['s_f1']:.4f} |")
         md.append("")
 
-    # ---- Table D ----
-    dc = _load(root / "results" / "manual2023_decomposition.json")
-    if dc:
-        summary["table_D"] = dc
-        md.append("## Table D — Distillation ceiling vs CR (Korean borehole, held-out events, 3 splits)\n")
-        md.append("| Student | Zero-shot P-F1 | Distilled P-F1 | Distilled S-F1 | Representation recovery (pts) | Residual vs baseline-ft 0.82 (pts) |")
-        md.append("|---|---|---|---|---|---|")
-        for cr, r in dc["per_cr"].items():
-            md.append(f"| CR = {cr} | {r['zero_shot_p_f1']:.2f} | {fmt_pm(*r['distill_p_f1'], digits=3)} | "
-                      f"{fmt_pm(*r['distill_s_f1'], digits=3)} | {100 * r['representation_recovery_p']:+.0f} | "
-                      f"{100 * r['spectral_residual_p_vs_baseline_ft']:.0f} |")
-        md.append("")
+    # ---- Table D: fixed-recipe distillation per student CR (Table 17) ----
+    d_rows = fixed_recipe_rows(root)
+    if d_rows:
+        summary["table_D"] = d_rows
+        md.append(table_d_markdown(d_rows))
 
     # ---- GPU step microbenchmark sweep (scripts/gpu_step_microbench.py) ----
     summary["gpu_sweep"] = _load(root / "results" / "gpu_step_microbench_sweep.json")

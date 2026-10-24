@@ -64,7 +64,7 @@ the reproduction quick-start.
 | File | Role |
 |---|---|
 | `train_cs_picker.py` | Main training loop (baseline / compressed / LP-only; `--dilation` for the receptive-field control; `--arch phasenet|eqtransformer` for the SeisBench controls; `--split event` for the event-level leakage control, Table 6) |
-| `evaluate.py` | Test-set evaluation (tolerances 0.1/0.5 s, residuals, `--snr-stratified`) |
+| `evaluate.py` | Test-set evaluation (F1 at 0.1/0.5 s; residuals matched within 0.5 s; `--snr-stratified`); `--dataset instance` reads INSTANCE in STEAD's E-N-Z order and standardizes after encoding (Table 14) |
 | `cluster_bootstrap.py` | Trace-level vs. event-cluster bootstrap CIs (Table 6); `--runs` selects checkpoints of any architecture (Table 11 CIs) |
 | `analyze_psd.py` | STEAD P/S-onset and noise PSD (Fig. 6) |
 | `analyze_s_snr_waveform.py` | Waveform-derived SNR stratification of P-F1 and S-F1 for all four Section-3.4 models (Table 12) |
@@ -80,7 +80,7 @@ the reproduction quick-start.
 | `gpu_step_microbench.py` | GPU training-step microbenchmark per architecture and input length over a batch-size sweep: step time, CPU enqueue time, CUDA kernel count (`gpu_step_microbench_sweep.json`; Section 3.4 speedup discussion) |
 | `run_event_split_experiment.sh` | Baseline vs. CR = 4 under the event-level split, three seeds (Table 6) |
 | `waveform_distortion.py` | Waveform fidelity of band truncation: transfer function, NRMSE, onset lag, pick bias (Table 7) |
-| `summarize_revision.py` | Aggregates the revision experiments into the Table 6/7/11/17 drafts (`revision_summary.json`) |
+| `summarize_revision.py` | Aggregates the revision experiments into the Table 6/7/11/17 drafts (`revision_summary.json`); reads the CR-sweep runs from `test_evaluation_summary.json` when no per-seed file exists |
 | `run_instance_experiment.sh` | INSTANCE retraining experiment (Tables 13–14) |
 
 ### Real-data validation and adaptation (Section 3.7; Tables 15–17)
@@ -92,13 +92,15 @@ the reproduction quick-start.
 | `adapt_manual2023.py` | Cluster-aware event-split fine-tuning and label-free distillation with threshold/tolerance sweeps (Table 17) |
 | `sweep_manual2023.py` | Symmetric hyperparameter sweep for fine-tune vs. distillation (inner-validation selection) + adaptation-cost timing |
 | `station_holdout_manual2023.py` | Five-fold borehole-site hold-out for cross-station generalization of distillation |
-| `distill_fixed_recipe.py` | Fully label-free distillation with the fixed recipe (lr 1e-4, T = 1, 30 epochs; no labeled validation); `--cr {2,4,8}` gives the distillation ceiling per retained band (Table 17, Section 3.7 decomposition) |
+| `distill_fixed_recipe.py` | Fully label-free distillation with the fixed recipe (lr 1e-4, T = 1, 30 epochs; no labeled validation); `--cr {2,4,8}` gives the fixed-recipe result per student CR, with the matching-tolerance sweep (Table 16) and the adaptation-cost timings (Section 3.7) (Table 17, Section 3.7 decomposition) |
 
 ### Figure generation
 
 | File | Role |
 |---|---|
-| `generate_figures.py` | CR-vs-F1 and time-to-accuracy figures (Figs. 5, 8) |
+| `generate_figures.py` | Step-decomposition, CR-vs-F1 and time-to-accuracy figures (Figs. 3, 5, 8) from the shipped profiles, test summary and epoch logs; fails on a missing input |
+| `inference_throughput.py` | Table 10: forward-only and end-to-end (per-window CPU wavelet encoding) inference throughput of the full-band, dilated and CR = 4 models |
+| `storage_sizes.py` | Table 5 storage column: float32 memmap payload per CR (GB = 10⁹ bytes) and the on-disk sizes |
 | `make_fig2_cr4.py` | Step-time decomposition figure with corrected CR=4 bar (Fig. 3) |
 | `make_fig_numworkers.py` | Worker-sweep figure (Fig. 4) |
 | `make_waveform_figure.py` | Representative-trace mechanism figure (Fig. 7) |
@@ -113,7 +115,7 @@ data) and therefore has no generation script.
 |---|---|
 | `synthetic_demo.py` | Runs the complete pipeline (synthetic waveforms → CR=4 encoding → training → evaluation → label-free distillation) with no external data, in about a minute. The reproducible test case required by the journal's code policy, given that the borehole waveforms are available on request only |
 
-## `tests/` — unit tests (122 tests, `pytest tests/`)
+## `tests/` — unit tests (140 tests, `pytest tests/`)
 
 | File | Role |
 |---|---|
@@ -127,13 +129,18 @@ data) and therefore has no generation script.
 | `test_event_split.py` | Event split: no `source_id` overlap, exact row coverage, permutation inverse, index dataset |
 | `test_cluster_bootstrap_cli.py` | Run/seed expansion for bootstrap CLI |
 | `test_waveform_distortion.py` | Band-limited reconstruction, NRMSE, onset lag, transfer function |
-| `test_summarize_revision.py` | Result aggregation (mean/std, wall-clock, epochs) |
+| `test_summarize_revision.py` | Result aggregation (mean/std, wall-clock, epochs; consolidated-summary fallback; fixed-recipe Table D) |
+| `test_instance_loader.py` | INSTANCE reader requests STEAD's E-N-Z order and standardizes after encoding |
+| `test_distill_fixed_recipe.py` | Tolerance-sweep rows and the timing/tolerance summary of the fixed-recipe run |
+| `test_inference_throughput.py` | Timed-batch accounting, optional per-batch encoding, Table 10 ratios |
+| `test_storage_sizes.py` | Payload bytes, savings from bytes, GB strings |
+| `test_generate_figures.py` | Named profile selection, missing-input reporting, wall-clock from epoch logs |
 | `test_train_cli_lr.py` | `--lr` override of the training CLI (default None, recorded in the checkpoint config) |
 | `test_snr_waveform_ps.py` | Per-trace P/S F1 scoring and SNR-bin summary of the waveform-SNR stratification |
 | `test_onset_spectral_fraction.py` | Onset energy fraction above a cutoff (tones, out-of-range windows, summary statistics) |
 | `test_check_event_split.py` | Event-split audit: pairwise overlap counts and row-coverage check |
 | `test_paired_bootstrap.py` | F1 from counts, per-trace count arrays, paired ΔF1 CI (identical models → zero; superset model → CI above zero; per-seed entries) |
-| `test_band_energy_retention.py` | Coefficient-energy fraction vs. time-domain energy ratio of the encoder output (tone, periodization identity, symmetric-extension inflation, difference statistics) |
+| `test_band_energy_retention.py` | Coefficient-energy fraction vs. time-domain energy ratio of the encoder output (tone, periodization identity, symmetric-extension inflation, difference statistics) ; DCT coefficient count equals the encoder's|
 
 ## Not included (by design)
 

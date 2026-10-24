@@ -3,24 +3,35 @@
   "recipe": "lr=0.0001, T=1.0, fixed 30 epochs, all training-side windows, no labeled validation",
   "student_cr": 4,
   "threshold": 0.3,
-  "tol_sec": 0.5
+  "tol_sec": 0.5,
+  "tolerance_sweep_sec": [
+   0.1,
+   0.2,
+   0.5
+  ],
+  "n_windows_total": 1965,
+  "encode_all_windows_sec": 0.27,
+  "device": "cuda"
  },
  "per_seed": [
   {
    "seed": 42,
-   "train_sec": 27.3,
+   "n_adapt_windows": 1494,
+   "n_test_windows": 471,
+   "teacher_sec": 0.36,
+   "train_sec": 7.0,
    "test": {
     "P": {
      "n_picks": 443,
-     "tp": 209,
-     "fp": 55,
-     "fn": 234,
-     "recall": 0.472,
-     "precision": 0.792,
-     "f1": 0.591,
-     "res_mean": 0.012,
-     "res_mae": 0.072,
-     "res_std": 0.118
+     "tp": 210,
+     "fp": 54,
+     "fn": 233,
+     "recall": 0.474,
+     "precision": 0.795,
+     "f1": 0.594,
+     "res_mean": 0.015,
+     "res_mae": 0.074,
+     "res_std": 0.123
     },
     "S": {
      "n_picks": 425,
@@ -34,55 +45,153 @@
      "res_mae": 0.036,
      "res_std": 0.058
     },
-    "ft_per_hour_pooled": 8.66
-   }
+    "ft_per_hour_pooled": 8.54
+   },
+   "student_tolerance": [
+    {
+     "tol_sec": 0.1,
+     "P_recall": 0.375,
+     "S_recall": 0.694,
+     "P_precision": 0.629,
+     "S_precision": 0.922
+    },
+    {
+     "tol_sec": 0.2,
+     "P_recall": 0.427,
+     "S_recall": 0.715,
+     "P_precision": 0.716,
+     "S_precision": 0.95
+    },
+    {
+     "tol_sec": 0.5,
+     "P_recall": 0.474,
+     "S_recall": 0.722,
+     "P_precision": 0.795,
+     "S_precision": 0.959
+    }
+   ],
+   "teacher_tolerance": [
+    {
+     "tol_sec": 0.1,
+     "P_recall": 0.643,
+     "S_recall": 0.633,
+     "P_precision": 0.794,
+     "S_precision": 0.968
+    },
+    {
+     "tol_sec": 0.2,
+     "P_recall": 0.691,
+     "S_recall": 0.638,
+     "P_precision": 0.852,
+     "S_precision": 0.975
+    },
+    {
+     "tol_sec": 0.5,
+     "P_recall": 0.707,
+     "S_recall": 0.638,
+     "P_precision": 0.872,
+     "S_precision": 0.975
+    }
+   ]
   },
   {
    "seed": 123,
-   "train_sec": 23.2,
+   "n_adapt_windows": 1468,
+   "n_test_windows": 497,
+   "teacher_sec": 0.25,
+   "train_sec": 6.3,
    "test": {
     "P": {
      "n_picks": 460,
-     "tp": 223,
-     "fp": 69,
-     "fn": 237,
-     "recall": 0.485,
-     "precision": 0.764,
-     "f1": 0.593,
+     "tp": 224,
+     "fp": 68,
+     "fn": 236,
+     "recall": 0.487,
+     "precision": 0.767,
+     "f1": 0.596,
      "res_mean": 0.014,
      "res_mae": 0.067,
      "res_std": 0.109
     },
     "S": {
      "n_picks": 474,
-     "tp": 336,
+     "tp": 337,
      "fp": 28,
-     "fn": 138,
-     "recall": 0.709,
+     "fn": 137,
+     "recall": 0.711,
      "precision": 0.923,
-     "f1": 0.802,
-     "res_mean": -0.008,
+     "f1": 0.803,
+     "res_mean": -0.009,
      "res_mae": 0.039,
      "res_std": 0.06
     },
-    "ft_per_hour_pooled": 11.71
-   }
+    "ft_per_hour_pooled": 11.59
+   },
+   "student_tolerance": [
+    {
+     "tol_sec": 0.1,
+     "P_recall": 0.396,
+     "S_recall": 0.667,
+     "P_precision": 0.623,
+     "S_precision": 0.866
+    },
+    {
+     "tol_sec": 0.2,
+     "P_recall": 0.459,
+     "S_recall": 0.7,
+     "P_precision": 0.723,
+     "S_precision": 0.91
+    },
+    {
+     "tol_sec": 0.5,
+     "P_recall": 0.487,
+     "S_recall": 0.711,
+     "P_precision": 0.767,
+     "S_precision": 0.923
+    }
+   ],
+   "teacher_tolerance": [
+    {
+     "tol_sec": 0.1,
+     "P_recall": 0.615,
+     "S_recall": 0.624,
+     "P_precision": 0.731,
+     "S_precision": 0.928
+    },
+    {
+     "tol_sec": 0.2,
+     "P_recall": 0.654,
+     "S_recall": 0.629,
+     "P_precision": 0.778,
+     "S_precision": 0.934
+    },
+    {
+     "tol_sec": 0.5,
+     "P_recall": 0.661,
+     "S_recall": 0.631,
+     "P_precision": 0.786,
+     "S_precision": 0.937
+    }
+   ]
   },
   {
    "seed": 7,
-   "train_sec": 24.8,
+   "n_adapt_windows": 1458,
+   "n_test_windows": 507,
+   "teacher_sec": 0.24,
+   "train_sec": 6.3,
    "test": {
     "P": {
      "n_picks": 462,
-     "tp": 216,
-     "fp": 83,
-     "fn": 246,
-     "recall": 0.468,
-     "precision": 0.722,
+     "tp": 215,
+     "fp": 80,
+     "fn": 247,
+     "recall": 0.465,
+     "precision": 0.729,
      "f1": 0.568,
      "res_mean": 0.013,
      "res_mae": 0.076,
-     "res_std": 0.123
+     "res_std": 0.124
     },
     "S": {
      "n_picks": 457,
@@ -96,23 +205,69 @@
      "res_mae": 0.039,
      "res_std": 0.056
     },
-    "ft_per_hour_pooled": 13.14
-   }
+    "ft_per_hour_pooled": 12.78
+   },
+   "student_tolerance": [
+    {
+     "tol_sec": 0.1,
+     "P_recall": 0.364,
+     "S_recall": 0.711,
+     "P_precision": 0.569,
+     "S_precision": 0.883
+    },
+    {
+     "tol_sec": 0.2,
+     "P_recall": 0.424,
+     "S_recall": 0.733,
+     "P_precision": 0.664,
+     "S_precision": 0.91
+    },
+    {
+     "tol_sec": 0.5,
+     "P_recall": 0.465,
+     "S_recall": 0.744,
+     "P_precision": 0.729,
+     "S_precision": 0.924
+    }
+   ],
+   "teacher_tolerance": [
+    {
+     "tol_sec": 0.1,
+     "P_recall": 0.641,
+     "S_recall": 0.635,
+     "P_precision": 0.771,
+     "S_precision": 0.909
+    },
+    {
+     "tol_sec": 0.2,
+     "P_recall": 0.682,
+     "S_recall": 0.648,
+     "P_precision": 0.82,
+     "S_precision": 0.928
+    },
+    {
+     "tol_sec": 0.5,
+     "P_recall": 0.688,
+     "S_recall": 0.652,
+     "P_precision": 0.828,
+     "S_precision": 0.934
+    }
+   ]
   }
  ],
  "summary": {
   "P": {
    "f1": [
-    0.584,
-    0.011
+    0.586,
+    0.013
    ],
    "recall": [
     0.475,
-    0.007
+    0.009
    ],
    "precision": [
-    0.759,
-    0.029
+    0.764,
+    0.027
    ],
    "res_mae": [
     0.072,
@@ -125,7 +280,7 @@
     0.01
    ],
    "recall": [
-    0.725,
+    0.726,
     0.014
    ],
    "precision": [
@@ -137,6 +292,53 @@
     0.001
    ]
   },
-  "ft_per_hour_pooled": 11.2
+  "ft_per_hour_pooled": 11.0,
+  "timing": {
+   "train_sec_mean": 6.5,
+   "teacher_sec_mean": 0.28,
+   "n_adapt_windows_mean": 1473.3
+  },
+  "tolerance_sweep": {
+   "student": {
+    "0.1": {
+     "P_recall": 0.378,
+     "S_recall": 0.691,
+     "P_precision": 0.607,
+     "S_precision": 0.89
+    },
+    "0.2": {
+     "P_recall": 0.437,
+     "S_recall": 0.716,
+     "P_precision": 0.701,
+     "S_precision": 0.923
+    },
+    "0.5": {
+     "P_recall": 0.475,
+     "S_recall": 0.726,
+     "P_precision": 0.764,
+     "S_precision": 0.935
+    }
+   },
+   "teacher_zero_shot": {
+    "0.1": {
+     "P_recall": 0.633,
+     "S_recall": 0.631,
+     "P_precision": 0.765,
+     "S_precision": 0.935
+    },
+    "0.2": {
+     "P_recall": 0.676,
+     "S_recall": 0.638,
+     "P_precision": 0.817,
+     "S_precision": 0.946
+    },
+    "0.5": {
+     "P_recall": 0.685,
+     "S_recall": 0.64,
+     "P_precision": 0.829,
+     "S_precision": 0.949
+    }
+   }
+  }
  }
 }

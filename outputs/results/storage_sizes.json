@@ -1,0 +1,61 @@
+{
+ "meta": {
+  "n_traces": 1265657,
+  "dtype": "float32",
+  "components": 3,
+  "unit": "GB = 1e9 bytes",
+  "definition": "traces x 3 x M x 4 bytes, all splits"
+ },
+ "rows": [
+  {
+   "cr": 1,
+   "M": 6000,
+   "bytes": 91127304000,
+   "gb": 91.127,
+   "gb_str": "91.1 GB",
+   "saving_pct": 0.0,
+   "saving_str": "0%",
+   "measured_bytes": 91127304384
+  },
+  {
+   "cr": 2,
+   "M": 3004,
+   "bytes": 45624403536,
+   "gb": 45.624,
+   "gb_str": "45.6 GB",
+   "saving_pct": 49.9,
+   "saving_str": "50%",
+   "measured_bytes": 45624403920
+  },
+  {
+   "cr": 4,
+   "M": 1506,
+   "bytes": 22872953304,
+   "gb": 22.873,
+   "gb_str": "22.9 GB",
+   "saving_pct": 74.9,
+   "saving_str": "75%",
+   "measured_bytes": 22872953688
+  },
+  {
+   "cr": 8,
+   "M": 756,
+   "bytes": 11482040304,
+   "gb": 11.482,
+   "gb_str": "11.5 GB",
+   "saving_pct": 87.4,
+   "saving_str": "87%",
+   "measured_bytes": 11482040688
+  },
+  {
+   "cr": 16,
+   "M": 382,
+   "bytes": 5801771688,
+   "gb": 5.802,
+   "gb_str": "5.8 GB",
+   "saving_pct": 93.6,
+   "saving_str": "94%",
+   "measured_bytes": 5801772072
+  }
+ ]
+}

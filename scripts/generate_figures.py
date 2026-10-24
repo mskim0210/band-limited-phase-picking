@@ -1,8 +1,13 @@
-"""Generate publication figures.
+"""Generate the manuscript figures that need no retraining.
 
-Fig. 3: step-time decomposition stacked bar + GPU utilization overlay.
-Fig. 5: CR vs F1 trade-off curve with speedup annotations.
-Fig. 8: time-to-accuracy curve from epoch logs.
+Fig. 3 (fig2_step_decomposition.png): step-time decomposition stacked bar +
+    GPU utilization overlay, from the single-model profiles in outputs/profiles.
+Fig. 5 (fig3_cr_vs_f1.png): CR vs. F1 trade-off curve with speedup
+    annotations, from test_evaluation_summary.json and the epoch logs.
+Fig. 8 (fig4_tta_curve.png): time-to-accuracy curve (validation P-F1 of
+    seed 42) from the epoch logs.
+
+Every input must exist; a missing one is reported as an error.
 
 Usage:
     python scripts/generate_figures.py --output-dir outputs/figures
@@ -25,22 +30,61 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def load_profiles(profile_dir: Path) -> dict[str, dict]:
-    """Load all profile JSON files from directory.
+# Single-model (CSPhaseNet, 1.45 M) profiles used by the paper (Fig. 3,
+# Tables 1-3).  The directory also holds the multi-model (S/M/L) and the
+# num_workers-sweep profiles, which carry the same pipeline levels and must
+# not be mixed in by keying every file on its level.
+PAPER_PROFILES = {"L0": "l0_stead_hdf5.json",
+                  "L1": "l1_seisbench_trace_blocks.json",
+                  "L2": "l2_stead_memmap.json",
+                  "L3": "l3_cs_gaussian_cr8.json"}
+
+
+def load_profiles(profile_dir: Path, files: dict[str, str] | None = None) -> dict[str, dict]:
+    """Load the named profile JSON files (level → file name).
+
+    Args:
+        profile_dir: Directory with the profiler outputs.
+        files: Mapping level → file name (default: ``PAPER_PROFILES``).
 
     Returns:
         Dict mapping level name to profile data.
+
+    Raises:
+        FileNotFoundError: when a named file is absent (nothing is silently
+        substituted).
     """
+    files = PAPER_PROFILES if files is None else files
     profiles = {}
-    for json_file in sorted(profile_dir.glob("*.json")):
+    for level, fname in files.items():
+        json_file = Path(profile_dir) / fname
+        if not json_file.exists():
+            raise FileNotFoundError(f"profile for {level} not found: {json_file}")
         with open(json_file) as f:
-            data = json.load(f)
-        if "metadata" not in data:
-            continue
-        level = data["metadata"]["level"]
-        profiles[level] = data
+            profiles[level] = json.load(f)
         logger.info("Loaded %s from %s", level, json_file.name)
     return profiles
+
+
+def wall_clock_mean_min(config: str, root: Path | str = "outputs",
+                        seeds: tuple[int, ...] = (42, 123, 7)) -> float | None:
+    """Mean wall-clock minutes of ``config`` over its seeds, from the epoch logs
+    (last ``wall_clock_sec`` row), as quoted in Table 5.  None when no log exists."""
+    import csv
+    mins = []
+    for seed in seeds:
+        log = Path(root) / "checkpoints" / f"{config}_seed{seed}" / "epoch_log.csv"
+        if not log.exists():
+            continue
+        rows = list(csv.DictReader(open(log)))
+        if rows:
+            mins.append(float(rows[-1]["wall_clock_sec"]) / 60.0)
+    return float(np.mean(mins)) if mins else None
+
+
+def missing_inputs(required: dict[str, Path]) -> list[str]:
+    """Names (e.g. figure labels) whose required input file does not exist."""
+    return [name for name, path in required.items() if not Path(path).exists()]
 
 
 def generate_fig2(
@@ -180,7 +224,7 @@ def generate_fig2(
     fig_path = output_dir / "fig2_step_decomposition.png"
     fig.savefig(fig_path, bbox_inches="tight", pad_inches=0.08)
     plt.close(fig)
-    logger.info("Saved Fig. 5: %s", fig_path)
+    logger.info("Saved Fig. 3 (step decomposition): %s", fig_path)
 
     return fig_path
 
@@ -204,7 +248,7 @@ def _ieee_style() -> None:
 
 
 def generate_fig3(output_dir: Path) -> Path:
-    """Generate Fig. 5: CR vs F1 trade-off curve.
+    """Generate Fig. 5: CR vs. F1 trade-off curve with speedup annotations.
 
     Args:
         output_dir: Directory for output figure.
@@ -228,13 +272,13 @@ def generate_fig3(output_dir: Path) -> Path:
             data = json.load(f)
         summary = data["summary"]
         f1_key = "tolerance_0.1s"
-        logger.info("CR-F1 figure: using TEST SET evaluation data")
+        logger.info("Fig. 3: using TEST SET evaluation data")
     else:
         with open(train_path) as f:
             data = json.load(f)
         summary = data["summary"]
         f1_key = None
-        logger.info("CR-F1 figure: using validation data (test eval not found)")
+        logger.info("Fig. 3: using validation data (test eval not found)")
 
     configs = [
         ("l2_baseline", 1),
@@ -249,10 +293,10 @@ def generate_fig3(output_dir: Path) -> Path:
     s_f1_mean, s_f1_std = [], []
     speedups = []
 
-    # Training time from experiment_summary (not in test eval)
-    with open(train_path) as f:
-        train_data = json.load(f)
-    baseline_time = train_data["summary"]["l2_baseline"]["wall_clock_mean_min"]
+    # Training time from the epoch logs (three-seed means, as in Table 5)
+    baseline_time = wall_clock_mean_min("l2_baseline")
+    if baseline_time is None:
+        raise FileNotFoundError("outputs/checkpoints/l2_baseline_seed*/epoch_log.csv")
 
     for config, cr in configs:
         s = summary[config]
@@ -267,7 +311,7 @@ def generate_fig3(output_dir: Path) -> Path:
             p_f1_std.append(s["p_f1_std"])
             s_f1_mean.append(s["s_f1_mean"])
             s_f1_std.append(s["s_f1_std"])
-        ts = train_data["summary"].get(config, {}).get("wall_clock_mean_min", baseline_time)
+        ts = wall_clock_mean_min(config) or baseline_time
         speedups.append(baseline_time / ts)
 
     crs = np.array(crs)
@@ -317,12 +361,12 @@ def generate_fig3(output_dir: Path) -> Path:
     fig_path = output_dir / "fig3_cr_vs_f1.png"
     fig.savefig(fig_path)
     plt.close(fig)
-    logger.info("Saved Fig. 5: %s", fig_path)
+    logger.info("Saved Fig. 5 (CR vs. F1): %s", fig_path)
     return fig_path
 
 
 def generate_fig4(output_dir: Path) -> Path:
-    """Generate Fig. 8: time-to-accuracy curve.
+    """Generate Fig. 8: time-to-accuracy curve (validation P-F1 of seed 42).
 
     Uses seed=42 epoch logs to plot P-F1 vs wall-clock time.
 
@@ -408,13 +452,13 @@ def generate_fig4(output_dir: Path) -> Path:
     fig_path = output_dir / "fig4_tta_curve.png"
     fig.savefig(fig_path)
     plt.close(fig)
-    logger.info("Saved Fig. 8: %s", fig_path)
+    logger.info("Saved Fig. 8 (time to accuracy): %s", fig_path)
     return fig_path
 
 
 def main() -> None:
     """CLI entrypoint."""
-    parser = argparse.ArgumentParser(description="Generate publication figures")
+    parser = argparse.ArgumentParser(description="Generate GRSL figures")
     parser.add_argument(
         "--profile-dir",
         type=str,
@@ -432,30 +476,25 @@ def main() -> None:
     profile_dir = Path(args.profile_dir)
     output_dir = Path(args.output_dir)
 
-    profiles = load_profiles(profile_dir)
-
-    if not profiles:
-        logger.error("No profile files found in %s", profile_dir)
+    required = {
+        "Fig. 3 (step decomposition) profiles": profile_dir / PAPER_PROFILES["L0"],
+        "Fig. 5 (CR vs. F1) test summary": Path("outputs/results/test_evaluation_summary.json"),
+        "Fig. 5/8 baseline epoch log": Path("outputs/checkpoints/l2_baseline_seed42/epoch_log.csv"),
+        "Fig. 5/8 CR = 4 epoch log": Path("outputs/checkpoints/wavelet_cr4_seed42/epoch_log.csv"),
+    }
+    absent = missing_inputs(required)
+    if absent:
+        logger.error("Missing inputs: %s", "; ".join(absent))
         sys.exit(1)
+
+    profiles = load_profiles(profile_dir)
 
     logger.info("Loaded %d profiles: %s", len(profiles), list(profiles.keys()))
 
-    # Fig. 3: step decomposition
-    fig2_path = generate_fig2(profiles, output_dir)
-
-    # Fig. 5: CR vs F1
-    if Path("outputs/results/experiment_summary.json").exists():
-        fig3_path = generate_fig3(output_dir)
-    else:
-        logger.warning("Skipping Fig. 5: experiment_summary.json not found")
-
-    # Fig. 8: time-to-accuracy curve
-    if Path("outputs/checkpoints/l2_baseline_seed42/epoch_log.csv").exists():
-        fig4_path = generate_fig4(output_dir)
-    else:
-        logger.warning("Skipping Fig. 8: epoch_log.csv not found")
-
-    logger.info("All figures generated. Output: %s", output_dir)
+    # Fig. 3 (step decomposition), Fig. 5 (CR vs. F1), Fig. 8 (time to accuracy)
+    generated = [generate_fig2(profiles, output_dir), generate_fig3(output_dir),
+                 generate_fig4(output_dir)]
+    logger.info("Generated %d figure(s): %s", len(generated), ", ".join(p.name for p in generated))
 
 
 if __name__ == "__main__":

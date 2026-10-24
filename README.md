@@ -21,7 +21,7 @@ teacher–student self-distillation.
 ```bash
 pip install -r requirements.txt
 python examples/synthetic_demo.py   # full pipeline on synthetic waveforms, ~1 min
-pytest tests/                       # 122 unit tests
+pytest tests/                       # 140 unit tests
 ```
 
 `examples/synthetic_demo.py` generates synthetic borehole-like 3-component
@@ -76,6 +76,24 @@ approval); the synthetic demo above provides a self-contained substitute for
 testing the adaptation code path.
 
 
+## What can be regenerated from this repository alone
+
+Three tiers, in increasing data requirements:
+
+1. **From the shipped snapshots (no data, no GPU):** every aggregated table and
+   figure that needs no retraining — `scripts/summarize_revision.py` (Tables 6,
+   7, 11, 17 drafts), `scripts/generate_figures.py` (Figs. 3, 5, 8),
+   `scripts/storage_sizes.py` (Table 5 storage), `scripts/band_energy_retention.py`
+   (Table 9 energy fractions; needs the STEAD memmap), plus `pytest tests/` and
+   `examples/synthetic_demo.py`.
+2. **With STEAD/INSTANCE and a GPU:** the training, evaluation, profiling,
+   bootstrap, throughput and zero-shot scripts in the map below rebuild the
+   per-run JSON files and epoch logs the snapshots were taken from.
+3. **With the KIGAM borehole waveforms (institutional approval):** the
+   Section 3.7 scripts (`scripts/*manual2023*.py`, `scripts/distill_fixed_recipe.py`,
+   `scripts/station_holdout_manual2023.py`); only the blind pick catalog is
+   included here.
+
 ## Reproduction map (paper -> script)
 
 | Paper item | Script | Output |
@@ -84,21 +102,22 @@ testing the adaptation code path.
 | Table 4 (chunked HDF5) | `scripts/exp2_hdf5_chunked.py` | `outputs/profiles/exp2_*.json` |
 | Fig. 4 (workers sweep) | `scripts/exp3_num_workers_sweep.py`, `scripts/make_fig_numworkers.py` | `fig_num_workers.png` |
 | Fig. 1 (sparsity) | `scripts/run_sparsity_analysis.py` | `outputs/sparsity/` |
-| Tables 5-6, Figs. 5 and 8 (CR sweep, bootstrap, time-to-accuracy) | `scripts/train_cs_picker.py`, `scripts/evaluate.py`, `scripts/cluster_bootstrap.py` | `outputs/results/` |
+| Tables 5-6, Figs. 5 and 8 (CR sweep, bootstrap, time-to-accuracy) | `scripts/train_cs_picker.py`, `scripts/evaluate.py`, `scripts/cluster_bootstrap.py`; from the snapshots: `scripts/summarize_revision.py` (tables), `scripts/generate_figures.py` (Figs. 3, 5, 8) | `outputs/results/` |
 | Table 6, lower block (event-level split control) | `scripts/run_event_split_experiment.sh` (`train_cs_picker.py --split event`) | `*_evsplit_seed*_test.json` |
 | Table 7 (waveform fidelity of band truncation) | `scripts/waveform_distortion.py` | `waveform_distortion.json` |
 | Table 9 (ablation incl. LP-only, dilated) | `scripts/run_exp1_lowpass.sh`; `train_cs_picker.py --dilation 4` | `outputs/results/` |
 | Table 8 (SNR stratification) | `scripts/evaluate.py --snr-stratified` | `*_snr.json` |
-| Table 10 (inference throughput) | timing snippet documented in `scripts/make_fig2_cr4.py` header; `outputs/results/inference_throughput.json` | |
+| Table 10 (inference throughput: forward-only and end-to-end with per-window CPU wavelet encoding on one thread) | `scripts/inference_throughput.py` | `inference_throughput.json` |
+| Table 5 storage column and the storage savings quoted in the Abstract and Sections 3.3/4 (float32 memmap payload, GB = 10⁹ bytes) | `scripts/storage_sizes.py` | `storage_sizes.json` |
 | Table 12 (waveform-derived SNR, P-F1 and S-F1) | `scripts/analyze_s_snr_waveform.py` | `s_snr_waveform.json` |
 | P-onset / pre-P noise energy fraction above the CR cutoffs, STEAD vs. Korean borehole, one definition (Sections 3.3, 3.7, 4) | `scripts/onset_spectral_fraction.py` | `onset_spectral_fraction.json` |
 | Event-level split audit: source_id disjointness and row coverage (Section 3.1, Table 6) | `scripts/check_event_split.py` | `event_split_check.json` |
 | Paired ΔF1 bootstrap CIs (CR = 4 vs. full-band for CSPhaseNet / PhaseNet / EQTransformer; LP-only vs. baseline; same resampled traces for both models and all seeds; Table 11 notes) | `scripts/paired_bootstrap.py --B 10000` | `paired_bootstrap.json` (per-trace counts cached under `per_trace_counts/`, rebuilt by the script) |
 | Er values and their comparison with the time-domain energy ratio of the encoder output (Section 2.2, Table 9) | `scripts/band_energy_retention.py` | `band_energy_retention.json` |
-| Fixed-recipe label-free check and CR = 2/8 distillation ceilings (Section 3.7, Table 17) | `scripts/distill_fixed_recipe.py --cr {2,4,8}` | `manual2023_distill_fixed*.json` |
+| Fixed-recipe label-free distillation per student CR, with the matching-tolerance sweep (Table 16) and the adaptation-cost timings of Section 3.7 (Table 17) | `scripts/distill_fixed_recipe.py --cr {2,4,8}` | `manual2023_distill_fixed*.json` |
 | Fig. 6 (PSD), Fig. 7 (example trace) | `scripts/analyze_psd.py`, `scripts/make_waveform_figure.py` | |
 | Table 13 (INSTANCE retraining) | `scripts/run_instance_experiment.sh` | `instance_*.json` |
-| Table 14 (zero-shot STEAD -> INSTANCE) | `scripts/evaluate.py --dataset instance --checkpoint <STEAD ckpt> --output outputs/results/instance_<config>.json` | `instance_l2_baseline*.json`, `instance_wavelet_cr4*.json` |
+| Table 14 (zero-shot STEAD -> INSTANCE; INSTANCE is read in STEAD's E-N-Z component order and standardized after encoding, as in training) | `scripts/evaluate.py --dataset instance --checkpoint <STEAD ckpt> --output outputs/results/instance_<config>.json` | `instance_l2_baseline*.json`, `instance_wavelet_cr4*.json` |
 | Table 11 (PhaseNet / EQTransformer controls with bootstrap CIs) | `scripts/train_cs_picker.py --arch phasenet`, `scripts/run_eqt_experiment.sh` (EQTransformer at lr = 1e-4, see the script header), `scripts/cluster_bootstrap.py --runs phasenet_baseline phasenet_wavelet_cr4 eqt_baseline eqt_wavelet_cr4` | `phasenet_*_test.json`, `eqt_*_test.json`, `arch_bootstrap_results_*.json` |
 | Section 3.4 GPU training-step sweep (step time, CPU enqueue time and CUDA kernel count per architecture at M = 6000 and 1506, batch 64/256/1024) | `scripts/gpu_step_microbench.py --batches 64 256 1024` | `gpu_step_microbench_sweep.json` |
 | Tables 15-17 (SE-Korea real data) | `scripts/manual2023_catalog.py`, `scripts/apply_manual2023.py`, `scripts/adapt_manual2023.py`, `scripts/sweep_manual2023.py`, `scripts/station_holdout_manual2023.py` | `manual2023_*.json` |
@@ -118,11 +137,18 @@ baseline 161 min / 32 epochs, CR = 4 76 min / 29 epochs). The Revision 1
 additions are included as well: `eqt_*_test.json` and `*_evsplit_*_test.json`
 with their epoch logs (Tables 6 and 11), `arch_bootstrap_results_{phasenet,eqt}.json`
 (Table 11 CIs), `waveform_distortion.json` (Table 7),
-`manual2023_distill_fixed_{rerun,cr2,cr8}.json` and `manual2023_decomposition.json`
-(Table 17), `gpu_step_microbench_sweep.json` (training-step time, CPU enqueue time and
+`manual2023_distill_fixed_{rerun,cr2,cr8}.json` (Tables 16 and 17, with per-split
+timing and the tolerance sweep; `manual2023_decomposition.json` is kept for reference
+but feeds no table), `gpu_step_microbench_sweep.json` (training-step time, CPU enqueue time and
 CUDA kernel count per architecture at full and CR = 4 input length for batch
 sizes 64, 256 and 1,024, Section 3.4), and `revision_summary.json`
-(aggregated drafts of Tables 6, 7, 11 and 17). The event-level split index is
+(aggregated drafts of Tables 6, 7, 11 and 17). The six `instance_*.json` zero-shot
+files were regenerated on 2026-10-24 with the STEAD component order and
+post-encoding standardization; `l2_baseline_seed*_test.json` and
+`wavelet_cr4_seed*_test.json` duplicate the CR-sweep entries of
+`test_evaluation_summary.json` so that `scripts/summarize_revision.py` fills the
+CSPhaseNet rows; `storage_sizes.json` and `inference_throughput.json` hold the
+Table 5 storage and Table 10 throughput measurements. The event-level split index is
 rebuilt deterministically by `cs_pipeline/event_split.py` (seed 42) on first use.
 Checkpoints and encoded arrays are excluded; rerunning any script overwrites the
 corresponding snapshot file.

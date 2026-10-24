@@ -47,3 +47,45 @@ def test_aggregate_runs_missing_returns_none(tmp_path: Path) -> None:
 def test_fmt_pm() -> None:
     assert fmt_pm(0.97553, 0.00041) == "0.9755 ± 0.0004"
     assert fmt_pm(0.97553, 0.00041, digits=3) == "0.976 ± 0.000"
+
+
+def test_aggregate_runs_falls_back_to_the_consolidated_summary(tmp_path: Path) -> None:
+    """The CR-sweep runs exist only inside test_evaluation_summary.json (per_run)."""
+    res = tmp_path / "results"
+    res.mkdir()
+    per_run = {}
+    for seed, p in zip((42, 123, 7), (0.90, 0.92, 0.91)):
+        per_run[f"fake_base_seed{seed}"] = {
+            "tolerance_0.1s": {"P": {"f1": p, "precision": 0.9, "recall": 0.9},
+                               "S": {"f1": 0.80, "precision": 0.8, "recall": 0.8}},
+            "timing": {"P": {"mae_sec": 0.02, "mean_residual_sec": 0.001},
+                       "S": {"mae_sec": 0.06, "mean_residual_sec": 0.0}}}
+    (res / "test_evaluation_summary.json").write_text(json.dumps({"per_run": per_run, "summary": {}}))
+    agg = aggregate_runs("fake_base", seeds=(42, 123, 7), root=tmp_path)
+    assert agg is not None and agg["n_seeds"] == 3
+    assert abs(agg["p_f1_mean"] - 0.91) < 1e-9 and abs(agg["s_f1_mean"] - 0.80) < 1e-9
+    assert abs(agg["p_mae_ms_mean"] - 20.0) < 1e-6
+
+
+def test_table_d_is_the_fixed_recipe_table_without_ceiling_language(tmp_path: Path) -> None:
+    from scripts.summarize_revision import fixed_recipe_rows, table_d_markdown
+    res = tmp_path / "results"
+    res.mkdir()
+    (res / "manual2023_distill_fixed_cr2.json").write_text(json.dumps({
+        "meta": {"student_cr": 2}, "per_seed": [{"train_sec": 30.0}, {"train_sec": 32.0}],
+        "summary": {"P": {"f1": [0.765, 0.016]}, "S": {"f1": [0.803, 0.005]}}}))
+    (res / "manual2023_distill_fixed_rerun.json").write_text(json.dumps({
+        "meta": {"student_cr": 4}, "per_seed": [{"train_sec": 27.3}],
+        "summary": {"P": {"f1": [0.584, 0.011]}, "S": {"f1": [0.817, 0.010]},
+                    "timing": {"train_sec_mean": 25.1}}}))
+    (res / "manual2023_distill_fixed_cr8.json").write_text(json.dumps({
+        "meta": {"student_cr": 8}, "per_seed": [{"train_sec": 19.7}],
+        "summary": {"P": {"f1": [0.366, 0.023]}, "S": {"f1": [0.697, 0.011]}}}))
+    rows = fixed_recipe_rows(tmp_path)
+    assert [r["cr"] for r in rows] == [2, 4, 8]
+    assert rows[0]["train_sec_mean"] == 31.0   # mean of per-seed times when no timing block
+    assert rows[1]["train_sec_mean"] == 25.1   # timing block preferred
+    assert rows[1]["p_f1"] == (0.584, 0.011)
+    md = table_d_markdown(rows).lower()
+    assert "fixed-recipe" in md  # the manuscript's term (Table 17)
+    assert "ceiling" not in md and "recovery" not in md and "residual" not in md
