@@ -1,7 +1,9 @@
 """Generate the manuscript figures that need no retraining.
 
-Fig. 3 (fig2_step_decomposition.png): step-time decomposition stacked bar +
-    GPU utilization overlay, from the single-model profiles in outputs/profiles.
+Fig. 3 (fig2_step_decomposition.png): per-step time decomposition with the
+    L0, L2, wavelet CR = 4 and Gaussian CR = 8 bars, from the single-model
+    profiles in outputs/profiles (scripts/make_fig2_cr4.py wraps the same
+    function, so both commands write the same figure).
 Fig. 5 (fig3_cr_vs_f1.png): CR vs. F1 trade-off curve with speedup
     annotations, from test_evaluation_summary.json and the epoch logs.
 Fig. 8 (fig4_tta_curve.png): time-to-accuracy curve (validation P-F1 of
@@ -87,145 +89,96 @@ def missing_inputs(required: dict[str, Path]) -> list[str]:
     return [name for name, path in required.items() if not Path(path).exists()]
 
 
-def generate_fig2(
-    profiles: dict[str, dict],
-    output_dir: Path,
-    levels: list[str] | None = None,
-) -> Path:
-    """Generate Fig. 3: step-time decomposition stacked bar + GPU util overlay.
+# ---- Fig. 3: per-step time decomposition -----------------------------------
+# Bars: L0 (HDF5), L2 (memmap), wavelet CR = 4 and Gaussian CR = 8 -- the
+# paper's four-bar figure.  The CR = 4 per-step time is the value measured from
+# the training steps (epoch-log wall-clock per step), entered as a constant;
+# its I/O and H2D components are taken from the shape-identical L3 profile.
+# GPU utilization is shown for L0/L2 only (not re-measured for the L3 bars).
+STEP_PHASES = ("t_io", "t_preprocess", "t_h2d", "t_compute")
+PHASE_LABELS = ("I/O", "Preprocess", "H2D", "Compute")
+PHASE_COLORS = ("#e74c3c", "#f39c12", "#3498db", "#2ecc71")
+BATCH_SIZE = 64
+CR4_TOTAL_MS = 9.3   # wavelet CR = 4 per-step wall time measured from the training steps
+CR4_IO_MS = 0.10     # I/O and host-to-device components of the shape-identical L3 profile
+CR4_H2D_MS = 0.06
+
+
+def step_decomposition_data(profiles: dict[str, dict], cr4_total_ms: float = CR4_TOTAL_MS,
+                            cr4_io_ms: float = CR4_IO_MS, cr4_h2d_ms: float = CR4_H2D_MS,
+                            ) -> dict[str, tuple[list[float], float, float | None]]:
+    """Fig. 3 bars: label -> ([I/O, preprocess, H2D, compute] in ms, traces/s, GPU util % or None)."""
+    def comp(level: str) -> list[float]:
+        summ = profiles[level]["summary"]
+        return [summ[k]["mean"] * 1000 for k in STEP_PHASES]
+
+    def tps(level: str) -> float:
+        return profiles[level]["summary"]["throughput_traces_per_sec"]
+
+    def gpu(level: str) -> float:
+        return profiles[level]["summary"]["gpu_util_mean_pct"]
+
+    cr4 = [cr4_io_ms, 0.0, cr4_h2d_ms, cr4_total_ms - cr4_io_ms - cr4_h2d_ms]
+    return {"L0\n(HDF5)": (comp("L0"), tps("L0"), gpu("L0")),
+            "L2\n(memmap)": (comp("L2"), tps("L2"), gpu("L2")),
+            "L3 CR=4\n(recomm.)": (cr4, BATCH_SIZE / (cr4_total_ms / 1000), None),
+            "L3 CR=8\n(max)": (comp("L3"), tps("L3"), None)}
+
+
+def generate_fig3_step_decomposition(profiles: dict[str, dict], output_dir: Path) -> Path:
+    """Generate Fig. 3 (fig2_step_decomposition.png): stacked step-time bars with
+    throughput labels and the L0/L2 GPU-utilization overlay.
 
     Args:
-        profiles: Dict of level→profile data.
-        output_dir: Directory for output figure.
-        levels: Ordered list of levels to include. Default: auto-detect.
+        profiles: Loaded profiles keyed by level (``load_profiles``).
+        output_dir: Directory for the output figure (created if absent).
 
     Returns:
-        Path to saved figure.
+        Path to the saved figure.
     """
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Determine levels to plot
-    if levels is None:
-        level_order = ["L0", "L2", "L3"]
-        levels = [l for l in level_order if l in profiles]
-
-    if not levels:
-        logger.error("No profiles found to plot")
-        return output_dir / "fig2_step_decomposition.png"
-
-    # Extract data
-    phase_keys = ["t_io", "t_preprocess", "t_h2d", "t_compute"]
-    phase_labels = ["I/O", "Preprocess", "H2D", "Compute"]
-    colors = ["#e74c3c", "#f39c12", "#3498db", "#2ecc71"]
-
-    level_labels = {
-        "L0": "L0\n(HDF5)",
-        "L2": "L2\n(memmap)",
-        "L3": "L3\n(CS+mm)",
-    }
-
-    means = {k: [] for k in phase_keys}
-    gpu_utils = []
-    x_labels = []
-    throughputs = []
-
-    for level in levels:
-        summary = profiles[level]["summary"]
-        for k in phase_keys:
-            means[k].append(summary.get(k, {}).get("mean", 0))
-        gpu_utils.append(summary.get("gpu_util_mean_pct", 0))
-        throughputs.append(summary.get("throughput_traces_per_sec", 0))
-        x_labels.append(level_labels.get(level, level))
-
-    # IEEE 2-column style
-    plt.rcParams.update({
-        "font.size": 8,
-        "axes.labelsize": 8,
-        "axes.titlesize": 9,
-        "legend.fontsize": 6.5,
-        "xtick.labelsize": 7,
-        "ytick.labelsize": 7,
-        "figure.dpi": 300,
-        "savefig.dpi": 300,
-        "savefig.bbox": "tight",
-        "savefig.pad_inches": 0.05,
-    })
-
+    data = step_decomposition_data(profiles)
+    _ieee_style()
     fig, ax1 = plt.subplots(figsize=(3.5, 3.0))
-
-    x = np.arange(len(levels))
-    width = 0.5
-
-    # Stacked bar
-    bottoms = np.zeros(len(levels))
-    bars = []
-    for i, k in enumerate(phase_keys):
-        values = np.array(means[k])
-        bar = ax1.bar(
-            x, values * 1000, width, bottom=bottoms * 1000,
-            color=colors[i], label=phase_labels[i], edgecolor="white", linewidth=0.3,
-        )
-        bars.append(bar)
-        bottoms += values
-
-    ax1.set_ylabel("Step time (ms)")
+    labels = list(data)
+    x = np.arange(len(labels))
+    bottoms = np.zeros(len(labels))
+    for i in range(4):
+        vals = np.array([data[lab][0][i] for lab in labels])
+        ax1.bar(x, vals, 0.5, bottom=bottoms, color=PHASE_COLORS[i],
+                label=PHASE_LABELS[i], edgecolor="white", linewidth=0.3)
+        bottoms += vals
+    ax1.set_yscale("log")
+    ax1.set_ylabel("Step time (ms, log scale)")
     ax1.set_xticks(x)
-    ax1.set_xticklabels(x_labels)
+    ax1.set_xticklabels(labels)
     ax1.set_title("Step Time Decomposition by Data Pipeline Level")
-
-    # Set y-axis to log if L0 dominates (before annotations)
-    use_log = False
-    if len(levels) > 1:
-        max_total = max(bottoms) * 1000
-        min_total = min(bottoms) * 1000
-        if max_total / max(min_total, 0.001) > 20:
-            ax1.set_yscale("log")
-            ax1.set_ylabel("Step time (ms, log scale)")
-            use_log = True
-
-    # Annotate throughput on each bar with background box
-    for i, (level, tp) in enumerate(zip(levels, throughputs)):
-        total_ms = bottoms[i] * 1000
-        # Place inside bar near top; use log-adjusted y
-        if use_log:
-            y_pos = total_ms * 0.55
-        else:
-            y_pos = total_ms * 0.85
-        ax1.text(
-            i, y_pos,
-            f"{tp:.0f} tr/s",
-            ha="center", va="center", fontsize=6, fontweight="bold",
-            color="black",
-            bbox=dict(boxstyle="round,pad=0.15", facecolor="white",
-                      edgecolor="none", alpha=0.85),
-        )
-
-    # GPU utilization overlay (secondary axis)
+    for i, lab in enumerate(labels):
+        ax1.text(i, bottoms[i] * 0.55, f"{data[lab][1]:.0f} tr/s", ha="center",
+                 va="center", fontsize=6, fontweight="bold", color="black",
+                 bbox=dict(boxstyle="round,pad=0.15", facecolor="white",
+                           edgecolor="none", alpha=0.85))
     ax2 = ax1.twinx()
-    ax2.plot(x, gpu_utils, "ko--", markersize=4, linewidth=1.0, label="GPU util (%)")
+    gx = [i for i, lab in enumerate(labels) if data[lab][2] is not None]
+    gy = [data[labels[i]][2] for i in gx]
+    ax2.plot(gx, gy, "ko--", markersize=4, linewidth=1.0, label="GPU util (%)")
     ax2.set_ylabel("GPU utilization (%)")
     ax2.set_ylim(0, 100)
-
-    # Combined legend — upper right (above short L2/L3 bars)
-    handles1, labels1 = ax1.get_legend_handles_labels()
-    handles2, labels2 = ax2.get_legend_handles_labels()
-    ax1.legend(
-        handles1 + handles2, labels1 + labels2,
-        loc="upper right", ncol=2, framealpha=0.9, fontsize=5.5,
-        handlelength=1.5, handleheight=0.8,
-        borderpad=0.6, handletextpad=0.4,
-    )
-
-    fig.subplots_adjust(top=0.82)  # room for legend + title above axes
+    h1, l1 = ax1.get_legend_handles_labels()
+    h2, l2 = ax2.get_legend_handles_labels()
+    ax1.legend(h1 + h2, l1 + l2, loc="upper right", ncol=2, framealpha=0.9,
+               fontsize=5.5, handlelength=1.5, handleheight=0.8,
+               borderpad=0.6, handletextpad=0.4)
+    fig.subplots_adjust(top=0.82)
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
     fig_path = output_dir / "fig2_step_decomposition.png"
     fig.savefig(fig_path, bbox_inches="tight", pad_inches=0.08)
     plt.close(fig)
     logger.info("Saved Fig. 3 (step decomposition): %s", fig_path)
-
     return fig_path
 
 
@@ -247,7 +200,7 @@ def _ieee_style() -> None:
     })
 
 
-def generate_fig3(output_dir: Path) -> Path:
+def generate_fig5_cr_vs_f1(output_dir: Path) -> Path:
     """Generate Fig. 5: CR vs. F1 trade-off curve with speedup annotations.
 
     Args:
@@ -365,7 +318,7 @@ def generate_fig3(output_dir: Path) -> Path:
     return fig_path
 
 
-def generate_fig4(output_dir: Path) -> Path:
+def generate_fig8_time_to_accuracy(output_dir: Path) -> Path:
     """Generate Fig. 8: time-to-accuracy curve (validation P-F1 of seed 42).
 
     Uses seed=42 epoch logs to plot P-F1 vs wall-clock time.
@@ -477,7 +430,9 @@ def main() -> None:
     output_dir = Path(args.output_dir)
 
     required = {
-        "Fig. 3 (step decomposition) profiles": profile_dir / PAPER_PROFILES["L0"],
+        "Fig. 3 (step decomposition) L0 profile": profile_dir / PAPER_PROFILES["L0"],
+        "Fig. 3 (step decomposition) L2 profile": profile_dir / PAPER_PROFILES["L2"],
+        "Fig. 3 (step decomposition) L3 profile": profile_dir / PAPER_PROFILES["L3"],
         "Fig. 5 (CR vs. F1) test summary": Path("outputs/results/test_evaluation_summary.json"),
         "Fig. 5/8 baseline epoch log": Path("outputs/checkpoints/l2_baseline_seed42/epoch_log.csv"),
         "Fig. 5/8 CR = 4 epoch log": Path("outputs/checkpoints/wavelet_cr4_seed42/epoch_log.csv"),
@@ -492,8 +447,8 @@ def main() -> None:
     logger.info("Loaded %d profiles: %s", len(profiles), list(profiles.keys()))
 
     # Fig. 3 (step decomposition), Fig. 5 (CR vs. F1), Fig. 8 (time to accuracy)
-    generated = [generate_fig2(profiles, output_dir), generate_fig3(output_dir),
-                 generate_fig4(output_dir)]
+    generated = [generate_fig3_step_decomposition(profiles, output_dir),
+                 generate_fig5_cr_vs_f1(output_dir), generate_fig8_time_to_accuracy(output_dir)]
     logger.info("Generated %d figure(s): %s", len(generated), ", ".join(p.name for p in generated))
 
 

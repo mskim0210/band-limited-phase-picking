@@ -89,3 +89,15 @@ def test_table_d_is_the_fixed_recipe_table_without_ceiling_language(tmp_path: Pa
     md = table_d_markdown(rows).lower()
     assert "fixed-recipe" in md  # the manuscript's term (Table 17)
     assert "ceiling" not in md and "recovery" not in md and "residual" not in md
+
+
+def test_write_outputs_creates_parent_directories_and_writes_utf8(tmp_path: Path) -> None:
+    """A fresh checkout has no manuscript/ directory; the writer must create
+    the parents and encode the × and ± characters as UTF-8 regardless of locale."""
+    from scripts.summarize_revision import DEFAULT_MD_OUT, write_outputs
+    json_out = tmp_path / "a" / "b" / "summary.json"
+    md_out = tmp_path / "c" / "tables.md"
+    write_outputs({"table_A": [{"speedup": 2.1}]}, ["# tables", "| 2.1× | 0.98 ± 0.01 |"], json_out, md_out)
+    assert json.loads(json_out.read_text(encoding="utf-8"))["table_A"][0]["speedup"] == 2.1
+    assert md_out.read_bytes().decode("utf-8") == "# tables\n| 2.1× | 0.98 ± 0.01 |"
+    assert DEFAULT_MD_OUT.endswith(".md") and DEFAULT_MD_OUT.startswith("outputs/")  # no manuscript/ in a checkout

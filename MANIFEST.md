@@ -80,7 +80,7 @@ the reproduction quick-start.
 | `gpu_step_microbench.py` | GPU training-step microbenchmark per architecture and input length over a batch-size sweep: step time, CPU enqueue time, CUDA kernel count (`gpu_step_microbench_sweep.json`; Section 3.4 speedup discussion) |
 | `run_event_split_experiment.sh` | Baseline vs. CR = 4 under the event-level split, three seeds (Table 6) |
 | `waveform_distortion.py` | Waveform fidelity of band truncation: transfer function, NRMSE, onset lag, pick bias (Table 7) |
-| `summarize_revision.py` | Aggregates the revision experiments into the Table 6/7/11/17 drafts (`revision_summary.json`); reads the CR-sweep runs from `test_evaluation_summary.json` when no per-seed file exists |
+| `summarize_revision.py` | Aggregates the revision experiments into the Table 6/7/11/17 drafts (`revision_summary.json`); reads the CR-sweep runs from `test_evaluation_summary.json` when no per-seed file exists; creates the output directories and writes UTF-8 |
 | `run_instance_experiment.sh` | INSTANCE retraining experiment (Tables 13–14) |
 
 ### Real-data validation and adaptation (Section 3.7; Tables 15–17)
@@ -98,10 +98,10 @@ the reproduction quick-start.
 
 | File | Role |
 |---|---|
-| `generate_figures.py` | Step-decomposition, CR-vs-F1 and time-to-accuracy figures (Figs. 3, 5, 8) from the shipped profiles, test summary and epoch logs; fails on a missing input |
+| `generate_figures.py` | Figs. 3, 5, 8 from the shipped profiles, test summary and epoch logs (Fig. 3: the four-bar step decomposition with the wavelet CR = 4 and Gaussian CR = 8 bars; a missing input is an error, nothing is skipped) |
 | `inference_throughput.py` | Table 10: forward-only and end-to-end (per-window CPU wavelet encoding) inference throughput of the full-band, dilated and CR = 4 models |
 | `storage_sizes.py` | Table 5 storage column: float32 memmap payload per CR (GB = 10⁹ bytes) and the on-disk sizes |
-| `make_fig2_cr4.py` | Step-time decomposition figure with corrected CR=4 bar (Fig. 3) |
+| `make_fig2_cr4.py` | Wrapper around `generate_figures.generate_fig3_step_decomposition` (Fig. 3); kept for the documented command, writes the same file |
 | `make_fig_numworkers.py` | Worker-sweep figure (Fig. 4) |
 | `make_waveform_figure.py` | Representative-trace mechanism figure (Fig. 7) |
 
@@ -115,7 +115,7 @@ data) and therefore has no generation script.
 |---|---|
 | `synthetic_demo.py` | Runs the complete pipeline (synthetic waveforms → CR=4 encoding → training → evaluation → label-free distillation) with no external data, in about a minute. The reproducible test case required by the journal's code policy, given that the borehole waveforms are available on request only |
 
-## `tests/` — unit tests (140 tests, `pytest tests/`)
+## `tests/` — unit tests (144 tests, `pytest tests/`)
 
 | File | Role |
 |---|---|
@@ -129,12 +129,12 @@ data) and therefore has no generation script.
 | `test_event_split.py` | Event split: no `source_id` overlap, exact row coverage, permutation inverse, index dataset |
 | `test_cluster_bootstrap_cli.py` | Run/seed expansion for bootstrap CLI |
 | `test_waveform_distortion.py` | Band-limited reconstruction, NRMSE, onset lag, transfer function |
-| `test_summarize_revision.py` | Result aggregation (mean/std, wall-clock, epochs; consolidated-summary fallback; fixed-recipe Table D) |
+| `test_summarize_revision.py` | Result aggregation (mean/std, wall-clock, epochs; consolidated-summary fallback; fixed-recipe Table D); output-directory creation and UTF-8 writing |
 | `test_instance_loader.py` | INSTANCE reader requests STEAD's E-N-Z order and standardizes after encoding |
 | `test_distill_fixed_recipe.py` | Tolerance-sweep rows and the timing/tolerance summary of the fixed-recipe run |
 | `test_inference_throughput.py` | Timed-batch accounting, optional per-batch encoding, Table 10 ratios |
 | `test_storage_sizes.py` | Payload bytes, savings from bytes, GB strings |
-| `test_generate_figures.py` | Named profile selection, missing-input reporting, wall-clock from epoch logs |
+| `test_generate_figures.py` | Named profile selection, missing-input reporting, wall-clock from epoch logs, four-bar Fig. 3 data and the shared builder |
 | `test_train_cli_lr.py` | `--lr` override of the training CLI (default None, recorded in the checkpoint config) |
 | `test_snr_waveform_ps.py` | Per-trace P/S F1 scoring and SNR-bin summary of the waveform-SNR stratification |
 | `test_onset_spectral_fraction.py` | Onset energy fraction above a cutoff (tones, out-of-range windows, summary statistics) |

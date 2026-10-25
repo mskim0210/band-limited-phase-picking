@@ -139,11 +139,24 @@ def _load(path: str) -> dict | None:
     return json.load(open(p)) if p.exists() else None
 
 
+DEFAULT_JSON_OUT = "outputs/results/revision_summary.json"
+DEFAULT_MD_OUT = "outputs/results/revision_tables.md"
+
+
+def write_outputs(summary: dict, md: list[str], json_out: str | Path, md_out: str | Path) -> None:
+    """Write the JSON summary and the Markdown tables, creating parent
+    directories (a fresh checkout has none) and encoding as UTF-8."""
+    for out in (Path(json_out), Path(md_out)):
+        out.parent.mkdir(parents=True, exist_ok=True)
+    Path(json_out).write_text(json.dumps(summary, indent=1, default=float), encoding="utf-8")
+    Path(md_out).write_text("\n".join(md), encoding="utf-8")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default="outputs")
-    ap.add_argument("--json-out", default="outputs/results/revision_summary.json")
-    ap.add_argument("--md-out", default="manuscript/revision_tables_v8.md")
+    ap.add_argument("--json-out", default=DEFAULT_JSON_OUT)
+    ap.add_argument("--md-out", default=DEFAULT_MD_OUT)
     args = ap.parse_args()
     root = Path(args.root)
 
@@ -224,8 +237,7 @@ def main() -> None:
     # ---- GPU step microbenchmark sweep (scripts/gpu_step_microbench.py) ----
     summary["gpu_sweep"] = _load(root / "results" / "gpu_step_microbench_sweep.json")
 
-    Path(args.json_out).write_text(json.dumps(summary, indent=1, default=float))
-    Path(args.md_out).write_text("\n".join(md))
+    write_outputs(summary, md, args.json_out, args.md_out)
     logger.info("saved %s and %s", args.json_out, args.md_out)
     print("\n".join(md))
 

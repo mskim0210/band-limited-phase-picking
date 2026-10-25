@@ -53,3 +53,41 @@ def test_load_profiles_raises_on_a_missing_named_file(tmp_path: Path) -> None:
 def test_missing_inputs_lists_the_absent_files(tmp_path: Path) -> None:
     (tmp_path / "a.json").write_text("{}")
     assert missing_inputs({"Fig. 5": tmp_path / "nope.json", "Fig. 8": tmp_path / "a.json"}) == ["Fig. 5"]
+
+
+def _profile(io: float, pre: float, h2d: float, comp: float, tps: float, gpu: float) -> dict:
+    return {"metadata": {}, "summary": {"t_io": {"mean": io}, "t_preprocess": {"mean": pre},
+                                        "t_h2d": {"mean": h2d}, "t_compute": {"mean": comp},
+                                        "throughput_traces_per_sec": tps, "gpu_util_mean_pct": gpu}}
+
+
+FAKE_PROFILES = {"L0": _profile(0.158, 0.0, 0.0003, 0.0188, 361.0, 10.9),
+                 "L2": _profile(0.0001, 0.0, 0.0002, 0.0182, 3487.0, 66.3),
+                 "L3": _profile(0.0001, 0.0, 0.0001, 0.0081, 7844.0, 8.5)}
+
+
+def test_step_decomposition_data_has_the_four_paper_bars() -> None:
+    """Fig. 3 of the paper: L0, L2, the wavelet CR = 4 bar (per-step time measured
+    from the training steps, I/O and H2D from the shape-identical L3 profile, no
+    GPU-utilization point) and the Gaussian CR = 8 bar."""
+    from scripts.generate_figures import CR4_TOTAL_MS, step_decomposition_data
+    data = step_decomposition_data(FAKE_PROFILES)
+    assert list(data) == ["L0\n(HDF5)", "L2\n(memmap)", "L3 CR=4\n(recomm.)", "L3 CR=8\n(max)"]
+    comps, tps, gpu = data["L3 CR=4\n(recomm.)"]
+    assert abs(sum(comps) - CR4_TOTAL_MS) < 1e-9 and comps[0] == 0.10 and comps[2] == 0.06
+    assert round(tps) == 6882 and gpu is None
+    assert data["L3 CR=8\n(max)"][2] is None and data["L0\n(HDF5)"][2] == 10.9
+    assert abs(data["L0\n(HDF5)"][0][0] - 158.0) < 1e-9  # ms
+
+
+def test_generate_fig3_step_decomposition_writes_the_paper_file(tmp_path: Path) -> None:
+    from scripts.generate_figures import generate_fig3_step_decomposition
+    out = generate_fig3_step_decomposition(FAKE_PROFILES, tmp_path)
+    assert out == tmp_path / "fig2_step_decomposition.png" and out.stat().st_size > 1000
+
+
+def test_make_fig2_cr4_delegates_to_the_shared_builder_and_the_three_bar_generator_is_gone() -> None:
+    import scripts.generate_figures as gf
+    import scripts.make_fig2_cr4 as wrapper
+    assert wrapper.build is gf.generate_fig3_step_decomposition
+    assert not hasattr(gf, "generate_fig2")

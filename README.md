@@ -21,7 +21,7 @@ teacher–student self-distillation.
 ```bash
 pip install -r requirements.txt
 python examples/synthetic_demo.py   # full pipeline on synthetic waveforms, ~1 min
-pytest tests/                       # 140 unit tests
+pytest tests/                       # 144 unit tests
 ```
 
 `examples/synthetic_demo.py` generates synthetic borehole-like 3-component
@@ -82,13 +82,17 @@ Three tiers, in increasing data requirements:
 
 1. **From the shipped snapshots (no data, no GPU):** every aggregated table and
    figure that needs no retraining — `scripts/summarize_revision.py` (Tables 6,
-   7, 11, 17 drafts), `scripts/generate_figures.py` (Figs. 3, 5, 8),
-   `scripts/storage_sizes.py` (Table 5 storage), `scripts/band_energy_retention.py`
-   (Table 9 energy fractions; needs the STEAD memmap), plus `pytest tests/` and
-   `examples/synthetic_demo.py`.
+   7, 11, 17 drafts; output directories are created as needed),
+   `scripts/generate_figures.py` (Figs. 3, 5, 8; Fig. 3 is the four-bar step
+   decomposition of the paper, also available as `scripts/make_fig2_cr4.py`,
+   which calls the same function), `scripts/storage_sizes.py` (Table 5 storage),
+   plus `pytest tests/` and `examples/synthetic_demo.py`.
 2. **With STEAD/INSTANCE and a GPU:** the training, evaluation, profiling,
    bootstrap, throughput and zero-shot scripts in the map below rebuild the
    per-run JSON files and epoch logs the snapshots were taken from.
+   `scripts/band_energy_retention.py` (Table 9 energy fractions) belongs here
+   because it reads 10,000 STEAD test traces from the memmap, although it needs
+   no GPU.
 3. **With the KIGAM borehole waveforms (institutional approval):** the
    Section 3.7 scripts (`scripts/*manual2023*.py`, `scripts/distill_fixed_recipe.py`,
    `scripts/station_holdout_manual2023.py`); only the blind pick catalog is
@@ -150,7 +154,12 @@ post-encoding standardization; `l2_baseline_seed*_test.json` and
 CSPhaseNet rows; `storage_sizes.json` and `inference_throughput.json` hold the
 Table 5 storage and Table 10 throughput measurements. The event-level split index is
 rebuilt deterministically by `cs_pipeline/event_split.py` (seed 42) on first use.
-Checkpoints and encoded arrays are excluded; rerunning any script overwrites the
+In the per-run entries of `test_evaluation_summary.json`, `model.M` is the nominal
+N/CR label the runs were launched with (3000/1500/750/375 for CR = 2/4/8/16); the
+encoded input length the models actually consume is N/2^k after symmetric boundary
+extension, 3004/1506/756/382 samples (Table 5; `storage_sizes.json`), and the
+checkpoints are indifferent to the label because the convolutional kernels have
+fixed sizes. Checkpoints and encoded arrays are excluded; rerunning any script overwrites the
 corresponding snapshot file.
 
 ## License
