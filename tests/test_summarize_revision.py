@@ -99,5 +99,5 @@ def test_write_outputs_creates_parent_directories_and_writes_utf8(tmp_path: Path
     md_out = tmp_path / "c" / "tables.md"
     write_outputs({"table_A": [{"speedup": 2.1}]}, ["# tables", "| 2.1× | 0.98 ± 0.01 |"], json_out, md_out)
     assert json.loads(json_out.read_text(encoding="utf-8"))["table_A"][0]["speedup"] == 2.1
-    assert md_out.read_bytes().decode("utf-8") == "# tables\n| 2.1× | 0.98 ± 0.01 |"
+    assert md_out.read_text(encoding="utf-8") == "# tables\n| 2.1× | 0.98 ± 0.01 |"  # universal newlines: Windows writes CRLF
     assert DEFAULT_MD_OUT.endswith(".md") and DEFAULT_MD_OUT.startswith("outputs/")  # no manuscript/ in a checkout
